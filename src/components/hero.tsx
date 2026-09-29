@@ -1,4 +1,6 @@
 'use client';
+import MotionText from '@/components/motion-text';
+
 import {useRef,useState} from 'react';
 import BotanicalScene from './botanical-scene';
 import Link from 'next/link';
@@ -11,7 +13,7 @@ export default function Hero({en=false}:{en?:boolean}){
  return <section className={'hero'+(expanded?' show-bloom':'')} ref={ref} onPointerMove={move} onPointerLeave={()=>ref.current?.classList.remove('is-blooming')}>
  <div className="botanical botanical-green"/><div className="botanical botanical-bloom"/><BotanicalScene expanded={expanded}/>
  <div className="hero-topline"><span>{en?'FLORELLE · FLOWER ATELIER':'FLORELLE · ЦВЕТОЧНОЕ АТЕЛЬЕ'}</span></div>
- <div className="hero-copy"><span className="eyebrow">{en?'FRESH FLOWERS & A LITTLE MAGIC':'СВЕЖИЕ ЦВЕТЫ И НЕМНОГО МАГИИ'}</span><h1><span className="hero-first-line">{en?'Flowers':'Цветы'}<span className="handwritten hero-signature" lang={en?'en':'ru'} aria-hidden="true">{en?'with love':'с любовью'}</span></span><br/><span className="hero-second-line">{shop.segment==='b2b'?(en?'for business':'для бизнеса'):(en?'beyond words':'вместо слов')}</span></h1><p>{en?'Some feelings need no words. Just flowers.':'Есть чувства, которым не нужны слова.\nДостаточно цветов.'}</p><Link className="button cream" href={'/catalog?segment='+shop.segment}>{shop.segment==='b2b'?(en?'Explore wholesale':'Перейти в оптовый каталог'):(en?'Explore flowers':'Выбрать цветы')}</Link></div>
+ <div className="hero-copy"><MotionText as="h1" singleLine={false}><span className="hero-first-line">{en?'Flowers':'Цветы'}<span className="handwritten hero-signature" lang={en?'en':'ru'} aria-hidden="true">{en?'with love':'с любовью'}</span></span>{' '}<span className="hero-second-line">{shop.segment==='b2b'?(en?'for business':'для бизнеса'):(en?'beyond words':'вместо слов')}</span></MotionText><MotionText as="p">{en?'Some feelings need no words. Just flowers.':'Есть чувства, которым не нужны слова.\nДостаточно цветов.'}</MotionText><Link className="button cream" href={'/catalog?segment='+shop.segment}>{shop.segment==='b2b'?(en?'Explore wholesale':'Перейти в оптовый каталог'):(en?'Explore flowers':'Выбрать цветы')}</Link></div>
  <button className="bloom-hint" onClick={()=>setExpanded(v=>!v)} aria-pressed={expanded} aria-label={expanded?(en?'Return to greenery':'Вернуть зелень'):(en?'Let the flowers bloom':'Раскрыть цветы')}><span className="bloom-dot">✳</span><span>{expanded?(en?'Return to greenery':'Вернуть зелень'):(en?'Touch to bloom':'Прикоснитесь — и всё расцветёт')}</span></button>
  <div className="hero-bottom"><span>{en?'SELECTED BY NATURE. CHOSEN BY YOU.':'СОЗДАНО ПРИРОДОЙ. ВЫБРАНО ВАМИ.'}</span><a href="#selection">{en?'SCROLL TO DISCOVER':'ВНИЗ, К ПРЕКРАСНОМУ'} <span>↓</span></a></div>
  </section>

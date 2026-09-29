@@ -1,4 +1,6 @@
 'use client';
+import MotionText from '@/components/motion-text';
+
 
 import Link from 'next/link';
 import BrandLogo from './brand-logo';
@@ -23,20 +25,20 @@ export default function EntryGateway() {
         <button className="language-toggle" onClick={() => shop.setEn(!shop.en)} aria-label={shop.en ? 'Switch to Russian' : 'Switch to English'}>{shop.en ? 'EN' : 'RU'}</button>
       </header>
       <div className="entry-content">
-        <span className="eyebrow">{shop.t('ДОБРО ПОЖАЛОВАТЬ В FLORELLE', 'WELCOME TO FLORELLE')}</span>
-        <h1>{shop.t('Ваш мир', 'Your world of')} <span className="script">{shop.t('цветов', 'flowers')}</span></h1>
-        <p>{shop.t('Выберите, как вы покупаете', 'Choose your shopping experience')}</p>
+
+        <MotionText as="h1">{shop.t('Ваш мир', 'Your world of')} <span className="script">{shop.t('цветов', 'flowers')}</span></MotionText>
+        <MotionText as="p">{shop.t('Выберите, как вы покупаете', 'Choose your shopping experience')}</MotionText>
         <nav className="entry-options" aria-label={shop.t('Выбор формата покупки', 'Choose how to shop')}>
-          <Link href="/b2b" className="entry-option" onClick={e=>enter(e,'b2b')}>
+          <Link href="/b2b" className="entry-option" onClick={e=>enter(e,'b2b')}><span className="entry-frame" data-motion-frame="" aria-hidden="true"><i/><i/><i/><i/></span>
             <span className="eyebrow">{shop.t('ФЛОРИСТАМ, СТУДИЯМ И МАГАЗИНАМ', 'FOR FLORISTS, STUDIOS & SHOPS')}</span>
-            <h2>{shop.t('Для', 'For')} <span className="script">{shop.t('бизнеса', 'business')}</span></h2>
-            <p>{shop.t('Оптовые цены, заказ коробками и ориентир AMS.', 'Wholesale pricing, by the box, AMS reference.')}</p>
+            <MotionText as="h2">{shop.t('Для', 'For')} <span className="script">{shop.t('бизнеса', 'business')}</span></MotionText>
+            <MotionText as="p">{shop.t('Оптовые цены, заказ коробками и ориентир AMS.', 'Wholesale pricing, by the box, AMS reference.')}</MotionText>
             <span className="entry-action">{shop.t('Перейти в опт', 'Enter wholesale')}<ArrowUpRight size={25}/></span>
           </Link>
-          <Link href="/b2c" className="entry-option" onClick={e=>enter(e,'b2c')}>
+          <Link href="/b2c" className="entry-option" onClick={e=>enter(e,'b2c')}><span className="entry-frame" data-motion-frame="" aria-hidden="true"><i/><i/><i/><i/></span>
             <span className="eyebrow">{shop.t('ДЛЯ СЕБЯ И БЛИЗКИХ', 'FOR YOU & YOUR LOVED ONES')}</span>
-            <h2>{shop.t('Для', 'For')} <span className="script">{shop.t('себя', 'you')}</span></h2>
-            <p>{shop.t('Розничные цены, цветы поштучно для вашего события.', 'Retail pricing, per stem, ready for your event.')}</p>
+            <MotionText as="h2">{shop.t('Для', 'For')} <span className="script">{shop.t('себя', 'you')}</span></MotionText>
+            <MotionText as="p">{shop.t('Розничные цены, цветы поштучно для вашего события.', 'Retail pricing, per stem, ready for your event.')}</MotionText>
             <span className="entry-action">{shop.t('Перейти в розницу', 'Enter retail')}<ArrowUpRight size={25}/></span>
           </Link>
         </nav>

@@ -24,7 +24,10 @@ def flower():
  return '<g fill="none" stroke="currentColor" stroke-width="1.05" stroke-linejoin="round">'+petals+'<circle cx="60" cy="60" r="4.5"/></g><g fill="none" stroke="currentColor" stroke-width=".45">'+veins+'</g>'
 def arc(text,top=True):
  size=13 if top else 10; scale=size/sans['head'].unitsPerEm; tracking=2.8 if top else 1.05
- widths=[glyph(sans,c)[1]*scale for c in text];total=sum(widths)+tracking*(len(text)-1);offset=-total/2;pieces=[];r=47
+ widths=[glyph(sans,c)[1]*scale for c in text];total=sum(widths)+tracking*(len(text)-1);offset=-total/2;pieces=[]
+ # Top capitals extend away from the flower; bottom capitals extend toward it.
+ # Offset the lower baseline by the cap height to match both inner clearances.
+ r=47 if top else 47+sans['OS/2'].sCapHeight*scale
  for c,w in zip(text,widths):
   theta=(offset+w/2)/r;offset+=w+tracking
   angle=theta*180/pi

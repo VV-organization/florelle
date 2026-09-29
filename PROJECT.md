@@ -13,4 +13,6 @@ Verification: desktop/mobile layout; search/filter/sort; currencies and segment 
 The Sites skill's referenced setup/hosting runtime is absent from the installed filesystem; use the available Next.js runtime matching Frags and provide a local preview. No deployment claimed.
 
 Brand: Florelle, “Цветы вместо слов”.
-Typography correction: inspect the supplied reference CSS before selecting typefaces. Use Google Sans from Urban Living for Cyrillic/Latin headings and interface, Owners Wide Medium from LxL for the Latin wordmark, Comforter Brush from Uprock for Russian and English handwritten accents (user request 29.09.2026). No Cormorant, Onest, Marck Script, or arbitrary substitutes. Exact source audit and glyph coverage: TYPOGRAPHY.md. The supplied Scribo subset has no Cyrillic; do not claim Russian handwriting is rendered in Scribo. User explicitly requested Cyrillic handwriting from Uprock: use the visually selected Comforter Brush, locally hosted with OFL. Pair meaningful handwritten words with sans in main page and section headings.
+Approved typography (29.09.2026): Prata for headings, Manrope for body/UI, Passions Conflict RUS for handwritten accents. Locally hosted. Previous Google Sans, Owners Wide and Comforter Brush experiments are superseded.
+
+Functional parity is incomplete. FLOWER-POINT-AUDIT.md records confirmed matches, fixes and remaining work. Prioritize the full shopping flow. Do not describe drafts as paid orders or a passing build as commercial readiness.

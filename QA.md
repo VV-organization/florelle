@@ -69,3 +69,13 @@
 - Production on :5195 with isolated /tmp database: account/session/security/order-draft tests and asset cleanup tests passed. Build and TypeScript passed.
 - Browser: desktop home; 390px gateway, home, catalog, cart, delivery, account, quick view. Correct Prata 400 / Manrope computed fonts; no page overflow. Adjusted initial script strokes on delivery/account pages. English delivery width checked.
 - Quick view Menta → add → visible confirmation inside native dialog → cart item present → reload → catalog primary action links to cart; reopening quick view also offers cart navigation without duplicate add. Escape closes dialog.
+
+## ERA entrance motion — 2026-09-29
+- Reference inspected visually and from its public animation module: character rotation, line masks, diagonal image reveals, 1.2s easing and stagger.
+- React renders the text spans; there is no imperative text splitting or rewriting. Handwriting remains joined. Headings keep a full accessible name.
+- Verified desktop gateway → arch → hero → horizontal product gallery. Later cards animate when they enter horizontally.
+- Verified mobile 390px, catalogue search, RU/EN switch, quick view and add → dialog confirmation → cart with the item present.
+- Interface reveals use masks, preserving hit testing; pointer/focus cancels the active reveal immediately. Notices are excluded from entrance delays.
+- Long words can wrap without horizontal overflow; legal titles are sized to fit the mobile viewport.
+- Reduced-motion preference skips entrances and cancels active effects when changed. With JS disabled, no hiding styles are applied. These fallback branches reviewed in code.
+- Production build, TypeScript and 3 existing production tests pass. No new animation dependency or external runtime request.
