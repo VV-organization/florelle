@@ -45,6 +45,9 @@ export default function MotionReveals({children}:{children:ReactNode}){
    }else if(el.dataset.motionText==='lines'){
     const words=Array.from(el.querySelectorAll<HTMLElement>('.motion-line-word'));const lines:number[]=[];
     words.forEach(word=>{const top=word.getBoundingClientRect().top;let line=lines.findIndex(y=>Math.abs(y-top)<3);if(line<0){line=lines.length;lines.push(top)}add(word,[{transform:'translateY(115%)'},{transform:'translateY(0)'}],line*100+100)});
+   }else if(el.matches('.catalogue-grid .product-photo > a')){
+    // Catalog browsing needs a quiet entrance, without a wipe or moving the flower.
+    add(el,[{opacity:0},{opacity:1}],0,'ease-out',280);
    }else if(el.matches(MEDIA)){
     add(el,[{clipPath:'polygon(100% 0%,100% 0%,101% 100%,125% 100%)'},{clipPath:'polygon(0% 0%,100% 0%,100% 100%,0% 100%)'}],100,IN_OUT);
     const img=el.querySelector('img');if(img)add(img,[{scale:'1.5',translate:'25% 0'},{scale:'1',translate:'0 0'}],100,IN_OUT);

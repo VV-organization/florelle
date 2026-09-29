@@ -1,4 +1,5 @@
 'use client';
+import {photoSrc} from '@/lib/photo-assets';
 
 import {useEffect, useRef} from 'react';
 
@@ -157,7 +158,7 @@ export default function BotanicalScene({expanded}: {expanded: boolean}) {
           gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
           if (textures.length === 2) { ready = true; resize(); resume(); }
         };
-        image.src = index ? '/images/botanical-bloom.jpg' : '/images/botanical-green.jpg';
+        image.src = photoSrc(index ? '/images/botanical-bloom.jpg' : '/images/botanical-green.jpg');
       });
       function move(event: PointerEvent) {
         if (event.pointerType === 'touch') return;

@@ -1,4 +1,5 @@
 'use client';
+import FlowerPhoto from './flower-photo';
 
 import {useState} from 'react';
 import Link from 'next/link';
@@ -19,13 +20,13 @@ export default function CollectionAtlas(){
    <div className="atlas-art" aria-hidden="true">
     <div className="atlas-plane"/>
     <div className="atlas-outline"/>
-    <div className="atlas-specimens">{flowers.map((flower,i)=><div key={flower.slug} className={'atlas-specimen'+(i===active?' is-active':'')}><img src={flower.image} alt="" width="750" height="850" loading="lazy"/></div>)}</div>
-    <div className="atlas-detail">{flowers.map((flower,i)=><img key={flower.slug} className={i===active?'is-active':''} src={flower.image} alt="" width="750" height="850" loading="lazy"/>)}</div>
+    <div className="atlas-specimens">{flowers.map((flower,i)=><div key={flower.slug} className={'atlas-specimen'+(i===active?' is-active':'')}><FlowerPhoto src={flower.image} alt="" width="750" height="850" loading="lazy"/></div>)}</div>
+    <div className="atlas-detail">{flowers.map((flower,i)=><FlowerPhoto key={flower.slug} sizes="30vw" className={i===active?'is-active':''} src={flower.image} alt="" width="750" height="850" loading="lazy"/>)}</div>
     <span className="atlas-hand script" key={chosen.slug}>{s.t(chosen.note[0],chosen.note[1])}</span>
    </div>
    <div className="atlas-index">
     <nav aria-label={s.t('Коллекции цветов','Flower collections')} className="atlas-navigation">{flowers.map((flower,i)=><Link key={flower.slug} href={'/catalog?category='+flower.slug} className={'atlas-choice'+(i===active?' is-active':'')} onPointerEnter={event=>{if(event.pointerType==='mouse')setActive(i)}} onFocus={()=>setActive(i)}>
-     <span className="atlas-thumb"><img src={flower.image} alt="" width="100" height="120" loading="lazy"/></span><MotionText as="h3">{s.t(flower.ru,flower.en)}</MotionText><span className="atlas-open">{s.t('Смотреть','Explore')}</span>
+     <span className="atlas-thumb"><FlowerPhoto src={flower.image} alt="" sizes="100px" width="100" height="120" loading="lazy"/></span><MotionText as="h3">{s.t(flower.ru,flower.en)}</MotionText><span className="atlas-open">{s.t('Смотреть','Explore')}</span>
     </Link>)}</nav>
     <div className="atlas-description" key={chosen.slug}><MotionText as="p">{s.t(chosen.copy[0],chosen.copy[1])}</MotionText></div>
     <Link className="atlas-all text-link" href="/catalog">{s.t('Все цветы коллекции','All flowers in the collection')}</Link>

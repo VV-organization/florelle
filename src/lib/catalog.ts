@@ -2,9 +2,11 @@ import raw from '@/data/catalog.json';
 export type Currency='RUB'|'KZT'|'TRY';
 export type Segment='b2c'|'b2b';
 export type Listing={id:string;product:{id:string;name:string;slug:string;description:string;image_url:string;category_id:string};seller:{name:string;country:string;verified:boolean};seller_price:string;box_quantity:number;available_units:number;image:string;source_image?:string;description_en?:string;color?:string;stem_length_cm?:number;head_size?:string|null;category?:{name:string;slug:string;name_en?:string};wholesale?:{seller_price:string;ams_price:string|null;available_units:number}|null};
+// Reviewed visual replacements for source placeholders. Keep original source URLs for provenance.
+const imageReplacements:Record<string,string>={'/catalog/cutouts/1018.webp':'/catalog/cutouts/27132.webp'};
 // One display convention for imported flower/grower names, regardless of source casing.
 export function displayName(value:string){return value.trim().toLowerCase().replace(/\p{L}/u,letter=>letter.toUpperCase())}
-export const listings:Listing[]=(raw.items as Listing[]).map(item=>({...item,product:{...item.product,name:displayName(item.product.name)},seller:{...item.seller,name:displayName(item.seller.name)}}));
+export const listings:Listing[]=(raw.items as Listing[]).map(item=>({...item,image:imageReplacements[item.image]||item.image,product:{...item.product,name:displayName(item.product.name)},seller:{...item.seller,name:displayName(item.seller.name)}}));
 export const rates:Record<string,number>=raw.rates.rates;
 export const categories=raw.facets.categories;
 export const collections=raw.collections;
@@ -20,4 +22,4 @@ export const colorNames:Record<string,[string,string,string]>={pink:['Розов
 
 // Resolve snapshots of old order images to the reviewed transparent originals.
 const flowerImages=new Map(listings.filter(p=>p.source_image).map(p=>[p.source_image!,p.image]));
-export function flowerImage(src:string){return flowerImages.get(src)||src}
+export function flowerImage(src:string){return imageReplacements[src]||flowerImages.get(src)||src}
