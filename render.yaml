@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: florelle
+    runtime: docker
+    plan: starter
+    numInstances: 1
+    healthCheckPath: /api/health
+    autoDeployTrigger: checksPass
+    disk:
+      name: florelle-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: DATA_DIR
+        value: /app/data
