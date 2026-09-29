@@ -65,3 +65,6 @@
 - В браузере подтверждены 20 предложений бестселлеров, 15 летней коллекции, оптовые остатки и AMS.
 - Проверка нескольких фильтров и сценария «другой продавец → добавление → уведомление → корзина» прервана из-за недоступности браузерной сессии. Не считать пройденной; нужна и повторная мобильная проверка.
 - Реальная отправка кода, оплата и исполнение заказа не проверялись и не заявляются работающими.
+
+## Scope update · 2026-09-29
+The owner clarified that missing checkout/payment, email confirmation, order lifecycle and legal/contact sections must be implemented as frontend layouts, with real integrations delegated to the developer. The new review routes and exact boundaries are recorded in `FRONTEND-HANDOFF.md`. Do not interpret demo payment or status transitions as live commerce. Merchant details, approved legal text and the commission rule are still required from the owner/integrator.
