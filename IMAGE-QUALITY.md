@@ -13,3 +13,7 @@ Original source files in `public/catalog` and `public/images` are retained.
 `src/data/image-quality.json` records original dimensions, source SHA-256, restoration method, and all delivered variants. `scripts/upscale-site-photos.py` rebuilds/resumes the batch using an external official Real-ESRGAN NCNN runtime and Pillow. Model/runtime binaries and scratch images are intentionally not committed. Use `--force --only <id>` to refresh a reviewed restoration.
 
 Run `npm test` for asset coverage and file integrity metadata checks. The original import is not a live supplier feed; developer integration remains separate.
+
+## Storefront integration handoff
+
+Customer-facing pages contain customer copy only. Keep implementation notes out of the UI. Checkout/order storage is still browser-local; registration/email, payment processing and live order statuses require developer integration. Payment actions must never mark an order paid without a provider response. Seller contact details and approved legal documents remain outstanding; do not invent phone numbers, addresses, company identifiers or legal claims. Current privacy/purchase pages describe the interface and are not a replacement for approved seller documents.
