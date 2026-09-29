@@ -18,3 +18,12 @@
 - Оптовая доставка, Стамбул: 100 кг = 2400 TRY, вес 1 кг не даёт допустимого тарифа. Проверен пересчёт в KZT и перевод интерфейса на английский.
 
 Не проверялись реальные платежи, отправка писем и выполнение доставки: соответствующие поставщики не подключены. Снимок каталога не является гарантией текущих остатков.
+
+
+## 2026-09-29: deployment and botanical motion
+
+- First GitHub Actions run 36519495319 passed: Linux npm ci/build/typecheck, Docker build, live container assets/health and account/order API tests.
+- Local standalone production server: health, registration, session, order draft, cross-user isolation and logout passed.
+- WebGL compiled in browser without errors; full bloom toggle and keyboard Enter work in both directions. Cursor reveal has an opaque center and feathered perimeter; foliage frames change while heading bounds remain identical.
+- Reduced-motion CSS fallback keeps the bloom toggle available; renderer responds to preference changes and pauses outside viewport/hidden tabs.
+- Local database files are excluded from Git, Docker context and standalone tracing.

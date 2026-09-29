@@ -67,3 +67,10 @@ h1 .script,h2 .script{font-size:1.18em;letter-spacing:0;font-weight:400}
 .delivery-visual>.handwritten{font-size:clamp(80px,9vw,145px)}
 .footer-top h2 .script{color:var(--pink)}
 @media(max-width:700px){.hero-signature{font-size:.66em;left:calc(100% + .24em);top:0}.delivery-visual>.handwritten{font-size:90px}.entry-content h1 .script{display:inline-block}.section-heading h2{line-height:1.23}}
+
+/* Shared WebGL displacement moves foliage while typography stays still. */
+.botanical-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:-2;pointer-events:none;opacity:0;transition:opacity .45s}
+.botanical-canvas.is-ready{opacity:1}
+.botanical-bloom{mask-image:radial-gradient(circle clamp(180px,32vw,420px) at var(--mx,80%) var(--my,50%),#000 72%,transparent 100%);transition:opacity .45s}
+.show-bloom .botanical-bloom{mask-image:none}
+@media(prefers-reduced-motion:reduce){.botanical-canvas{display:none}.botanical-bloom{mask-image:none}.bloom-hint{display:flex}}
