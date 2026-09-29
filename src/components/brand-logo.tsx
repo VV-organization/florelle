@@ -1,0 +1,43 @@
+'use client';
+import {useEffect,useRef} from 'react';
+
+type BrandLogoProps = {en?:boolean; className?:string};
+
+/** Only the circular inscription rotates; the floral centre remains still. */
+export default function BrandLogo({en=false,className=''}:BrandLogoProps){
+ const ring=useRef<HTMLImageElement>(null);
+ useEffect(()=>{
+  const el=ring.current;if(!el)return;
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  let frame=0,angle=0,speed=30,target=30,direction=1,last=0,lastScroll=performance.now(),lastY=window.scrollY,scrollUntil=0,interacted=false,visible=true;
+  const input=()=>{interacted=true};
+  const scroll=()=>{
+   const now=performance.now(),y=window.scrollY,delta=y-lastY;
+   const velocity=delta/Math.max(16.67,now-lastScroll)*16.67;
+   lastY=y;lastScroll=now;
+   if(!interacted||!delta)return;
+   direction=delta>0?1:-1;target=direction*(30+10*Math.abs(velocity));scrollUntil=now+100;
+  };
+  const tick=(now:number)=>{
+   const dt=Math.min(now-last,100);last=now;
+   if(now>scrollUntil)target=30*direction;
+   speed+=(target-speed)*(1-Math.exp(-dt/(now>scrollUntil?400:100)));
+   angle=(angle+speed*dt/1000)%360;
+   el.style.transform=`rotate(${angle}deg)`;
+   frame=requestAnimationFrame(tick);
+  };
+  const update=()=>{
+   cancelAnimationFrame(frame);
+   if(reduced.matches){angle=0;el.style.transform='rotate(0deg)';return}
+   if(visible&&!document.hidden){last=performance.now();frame=requestAnimationFrame(tick)}
+  };
+  const observer=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;update()});observer.observe(el);
+  window.addEventListener('wheel',input,{passive:true});window.addEventListener('touchmove',input,{passive:true});window.addEventListener('scroll',scroll,{passive:true});
+  document.addEventListener('visibilitychange',update);reduced.addEventListener('change',update);update();
+  return()=>{cancelAnimationFrame(frame);observer.disconnect();window.removeEventListener('wheel',input);window.removeEventListener('touchmove',input);window.removeEventListener('scroll',scroll);document.removeEventListener('visibilitychange',update);reduced.removeEventListener('change',update)};
+ },[]);
+ return <span className={`florelle-logo ${className}`} role="img" aria-label={en?'Florelle — flower atelier':'Florelle — цветочное ателье'}>
+  <img ref={ring} className="florelle-logo__seal" src={`/brand/florelle-ring-${en?'en':'ru'}-cream.svg`} width="120" height="120" alt="" aria-hidden="true"/>
+  <img className="florelle-logo__flower" src="/brand/florelle-flower-centered.svg" width="120" height="120" alt="" aria-hidden="true"/>
+ </span>
+}

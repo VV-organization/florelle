@@ -21,3 +21,15 @@ test('account, session, validated order drafts and logout',async()=>{const email
  const wholesale=await req('/api/orders',{...payload,items:[{...payload.items[0],segment:'b2b'}],kg:9},cookie);assert.equal(wholesale.response.status,400);
  const logout=await req('/api/account',{action:'logout'},cookie);assert.equal(logout.response.status,200);const after=await req('/api/account',undefined,cookie,'GET');assert.equal(after.data.user,null);
 });
+
+test('production serves approved fonts and excludes design studies',async()=>{
+ for(const font of ['prata','manrope-variable','passions-conflict-rus']){
+  const response=await fetch(`${base}/fonts/${font}.woff2`);
+  assert.equal(response.status,200,font);
+  const bytes=new Uint8Array(await response.arrayBuffer());
+  assert.equal(new TextDecoder().decode(bytes.slice(0,4)),'wOF2',font);
+ }
+ for(const path of ['/type-study/index.html','/type-study/pairings.html','/fonts/comforter-brush.woff2','/fonts/owners-wide-medium.woff2']){
+  const response=await fetch(base+path);assert.equal(response.status,404,path);
+ }
+});

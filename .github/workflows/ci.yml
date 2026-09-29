@@ -30,5 +30,7 @@ jobs:
           done
           curl -fsS http://127.0.0.1:5195/api/health
           curl -fsS http://127.0.0.1:5195/b2c > /dev/null
-          curl -fsS http://127.0.0.1:5195/fonts/comforter-brush.woff2 > /dev/null
+          for font in prata manrope-variable passions-conflict-rus; do
+            curl -fsS "http://127.0.0.1:5195/fonts/$font.woff2" > /dev/null
+          done
           TEST_BASE_URL=http://127.0.0.1:5195 npm test
