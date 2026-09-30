@@ -13,5 +13,8 @@ test('customer translations exclude demo labels and developer handoff notes',()=
 test('customers cannot simulate payment success or manually choose order states',()=>{
  const source=readFileSync(new URL('commerce-preview.tsx',folder),'utf8');
  assert.doesNotMatch(source,/change\('paid'\)|value=\{order.status\}/);
+ assert.match(source,/fetch\('\/api\/orders'/);
+ assert.doesNotMatch(source,/florelle-preview-orders|localStorage.*order/i);
+ assert.doesNotMatch(source,/setPaymentError|onClick=\{\(\)=>setPaymentError/);
  assert.doesNotMatch(readFileSync(new URL('registration-preview.tsx',folder),'utf8'),/123456/);
 });

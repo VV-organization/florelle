@@ -14,7 +14,7 @@ export default function RegistrationPreview(){
   try{
    const response=await fetch('/api/account',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',name:form.get('name'),phone:form.get('phone'),email:form.get('email'),password:form.get('password'),company:form.get('company')||''})});
    const data=await response.json();if(!response.ok)throw Error(data.error);
-   s.setUser(data.user);router.push('/account');
+   s.setUser(data.user);router.push(new URLSearchParams(location.search).get('return')==='checkout'?'/checkout':'/account');
   }catch(e){setError(e instanceof Error?e.message:s.t('Не удалось создать аккаунт. Попробуйте ещё раз.','Unable to create your account. Please try again.'))}
   finally{setBusy(false)}
  }
