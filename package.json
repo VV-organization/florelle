@@ -9,7 +9,9 @@
     "start": "node .next/standalone/server.js",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
-    "postbuild": "node scripts/prepare-standalone.mjs"
+    "postbuild": "node scripts/verify-static-export.mjs",
+    "build:server": "node scripts/build-server.mjs",
+    "preview:pages": "node scripts/serve-pages.mjs"
   },
   "dependencies": {
     "next": "16.3.5",

@@ -1,4 +1,5 @@
 'use client';
+import {assetPath} from '@/lib/site-path';
 import {useEffect,useRef} from 'react';
 
 type BrandLogoProps = {en?:boolean; className?:string};
@@ -37,7 +38,7 @@ export default function BrandLogo({en=false,className=''}:BrandLogoProps){
   return()=>{cancelAnimationFrame(frame);observer.disconnect();window.removeEventListener('wheel',input);window.removeEventListener('touchmove',input);window.removeEventListener('scroll',scroll);document.removeEventListener('visibilitychange',update);reduced.removeEventListener('change',update)};
  },[]);
  return <span className={`florelle-logo ${className}`} role="img" aria-label={en?'Florelle — flower atelier':'Florelle — цветочное ателье'}>
-  <img ref={ring} className="florelle-logo__seal" src={`/brand/florelle-ring-${en?'en':'ru'}-cream.svg`} width="120" height="120" alt="" aria-hidden="true"/>
-  <img className="florelle-logo__flower" src="/brand/florelle-flower-centered.svg" width="120" height="120" alt="" aria-hidden="true"/>
+  <img ref={ring} className="florelle-logo__seal" src={assetPath(`/brand/florelle-ring-${en?'en':'ru'}-cream.svg`)} width="120" height="120" alt="" aria-hidden="true"/>
+  <img className="florelle-logo__flower" src={assetPath('/brand/florelle-flower-centered.svg')} width="120" height="120" alt="" aria-hidden="true"/>
  </span>
 }

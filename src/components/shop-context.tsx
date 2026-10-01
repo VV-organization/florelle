@@ -1,4 +1,5 @@
 'use client';
+import {staticStorefront} from '@/lib/site-path';
 import {createContext,useContext,useEffect,useState,useCallback,useRef} from 'react';
 import {listings,available,type Currency,type Segment,type Listing} from '@/lib/catalog';
 export type CartLine={id:string;segment:Segment;quantity:number};
@@ -7,7 +8,7 @@ type Shop={currency:Currency;setCurrency:(c:Currency)=>void;segment:Segment;setS
 const Context=createContext<Shop|null>(null);
 export function ShopProvider({children}:{children:React.ReactNode}){
  const[currency,setCurrency]=useState<Currency>('RUB'),[segment,setSegment]=useState<Segment>('b2c'),[en,setEn]=useState(false),[cart,setCart]=useState<CartLine[]>([]),[ready,setReady]=useState(false),[notice,setNotice]=useState(''),[user,setUser]=useState<User|null>(null);const cartRef=useRef(cart);cartRef.current=cart;
- const refreshUser=useCallback(async()=>{try{const r=await fetch('/api/account');if(r.ok){const d=await r.json();setUser(d.user)}}catch{}},[]);
+ const refreshUser=useCallback(async()=>{if(staticStorefront)return;try{const r=await fetch('/api/account');if(r.ok){const d=await r.json();setUser(d.user)}}catch{}},[]);
  useEffect(()=>{try{const saved=JSON.parse(localStorage.getItem('flower-point-v1')||'{}');if(['RUB','KZT','TRY'].includes(saved.currency))setCurrency(saved.currency);if(['b2b','b2c'].includes(saved.segment))setSegment(saved.segment);setEn(saved.en===true);if(Array.isArray(saved.cart)){const seen=new Set<string>();setCart(saved.cart.filter((l:CartLine)=>{const p=listings.find(x=>x.id===l.id),key=l.id+l.segment;if(!p||!['b2b','b2c'].includes(l.segment)||!Number.isInteger(l.quantity)||l.quantity<1||seen.has(key))return false;seen.add(key);return true}).map((l:CartLine)=>({...l,quantity:Math.min(l.quantity,available(listings.find(x=>x.id===l.id)!,l.segment))})).filter((l:CartLine)=>l.quantity>0))}}catch{}setReady(true);refreshUser()},[refreshUser]);
  useEffect(()=>{if(ready)try{localStorage.setItem('flower-point-v1',JSON.stringify({currency,segment,en,cart}))}catch{}document.documentElement.lang=en?'en':'ru'},[currency,segment,en,cart,ready]);
  function add(p:Listing,n=1){if(cartRef.current.some(x=>x.id===p.id&&x.segment===segment))return;const quantity=Math.min(Math.max(1,Math.floor(n)),available(p,segment));if(quantity<1)return;const next=[...cartRef.current,{id:p.id,segment,quantity}];cartRef.current=next;setCart(next);setNotice(p.product.name)}

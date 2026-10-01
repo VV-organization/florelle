@@ -6,3 +6,5 @@ data/*.sqlite*
 output/
 *.tsbuildinfo
 .DS_Store
+
+out/

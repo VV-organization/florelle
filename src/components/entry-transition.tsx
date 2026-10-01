@@ -1,6 +1,7 @@
 'use client';
 
 import {createContext,useCallback,useContext,useEffect,useRef,type ReactNode} from 'react';
+import {routePath} from '@/lib/site-path';
 import {usePathname,useRouter} from 'next/navigation';
 
 const EntryTransitionContext=createContext<(href:string,source:HTMLElement)=>void>(()=>{});
@@ -15,7 +16,7 @@ function ease(t:number,x1:number,x2:number){
 }
 
 export default function EntryTransition({children}:{children:ReactNode}){
- const router=useRouter(),path=usePathname();
+ const router=useRouter(),path=routePath(usePathname());
  const cover=useRef<HTMLDivElement>(null),content=useRef<HTMLDivElement>(null);
  const pending=useRef<string|null>(null),dispose=useRef<()=>void>(()=>{});
  const begin=useCallback((href:string,source:HTMLElement)=>{

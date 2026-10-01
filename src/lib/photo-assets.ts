@@ -1,3 +1,4 @@
+import {assetPath} from '@/lib/site-path';
 import quality from '@/data/image-quality.json';
 
 type Variant={src:string;width:number;height:number;edge:number;bytes:number};
@@ -8,4 +9,4 @@ const aliases:Record<string,string>={
  '/catalog/restored/3730.png':'/catalog/cutouts/3730.webp',
 };
 export function photoAsset(source:string){return photos[aliases[source]||source]}
-export function photoSrc(source:string){return photoAsset(source)?.variants.at(-1)?.src||source}
+export function photoSrc(source:string){return assetPath(photoAsset(source)?.variants.at(-1)?.src||source)}

@@ -11,6 +11,8 @@ npm install
 npm run dev
 ```
 
+`npm run build` создаёт статическую витрину GitHub Pages в `out/` с префиксом `/florelle/`; `npm run preview:pages` открывает её на http://127.0.0.1:5196/florelle/. На Pages доступны каталог, корзина и расчёт доставки; вход и оформление недоступны. Полная версия с API: `npm run build:server`, затем `npm start`.
+
 Проверки: `npm run typecheck`, `npm run build`. Для `npm test` сначала запустите приложение; адрес меняется через `TEST_BASE_URL`.
 
 ## Реализовано
