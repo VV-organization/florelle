@@ -138,7 +138,8 @@ export default function BotanicalScene({expanded}: {expanded: boolean}) {
         gl!.uniform1f(uniforms.time, elapsed);
         gl!.uniform1f(uniforms.opened, opened);
         gl!.drawArrays(gl!.TRIANGLES, 0, 6);
-        canvas!.classList.add('is-ready');
+        // Re-adding an existing token still emits a DOM mutation in browsers.
+        if (!canvas!.classList.contains('is-ready')) canvas!.classList.add('is-ready');
         frame = requestAnimationFrame(draw);
       }
       function resume() {
