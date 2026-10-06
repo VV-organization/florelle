@@ -1,0 +1,35 @@
+name: Build & Deploy Stage
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: florelle-stage
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, florelle-stage]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Copy environment
+        run: |
+          cp ~/.envs/florelle/.env .env
+          chmod 600 .env
+
+      - name: Build
+        run: docker compose build
+
+      - name: Deploy
+        run: docker compose up -d
+
+      - name: Cleanup environment
+        if: always()
+        run: rm -f .env

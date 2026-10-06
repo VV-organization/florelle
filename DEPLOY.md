@@ -1,51 +1,62 @@
-# Deployment
+# Florelle stage deployment
 
-There are two deployment targets, both using Node.js 24 at build time.
+Deployment follows `../deploy-templates/templates/workflow.deploy.yaml` and the `multi-service` / `node-ssr` templates. There is one stage entry point: root `docker-compose.yaml` and `.github/workflows/deploy.yaml`.
 
-## GitHub Pages storefront
+## Runner and trigger
 
-`npm ci && npm run build` produces `out/` for https://vv-organization.github.io/florelle/.
-`npm run preview:pages` serves that exact export at http://127.0.0.1:5196/florelle/ (no Next server or SPA fallback).
+- Branch: `main`.
+- Runner: self-hosted, with label `florelle-stage`.
+- Server environment: `~/.envs/florelle/.env`, mode600; parent directory mode700.
+- Runner needs Docker Engine and the Compose plugin, with permission to use Docker.
+- Workflow serializes deployment with concurrency group `florelle-stage` and does only checkout, env copy, `docker compose build`, `docker compose up -d`, and unconditional env cleanup.
+- Separate backend/frontend CI remains under root `.github/workflows`; it tests/builds but does not deploy. Do not run untrusted PR code on the stage runner.
 
-The storefront supports the catalogue, product/seller pages, search/filtering, retail/wholesale modes, currencies, basket persistence, quick view and delivery estimates. Registration, sign-in and ordering are explicitly unavailable on Pages; their routes display an explanation. No passwords or orders are stored in browser storage. The cart does not offer checkout or payment on Pages.
+Runner registration, server secret creation, DNS/TLS and the first remote workflow run are server setup tasks. They are not performed by committing this configuration.
 
-`.github/workflows/pages.yml` builds on pull requests and pushes to `main`, verifies exported routes and local URLs, and uploads only `out/`. Deployment runs only from `main`, with `pages: write`, `id-token: write` and the `github-pages` environment. Manual dispatch is supported. In repository Settings → Pages, use Source → GitHub Actions (already enabled when checked on 2026-10-01). Push the configuration to `main` to trigger publication; a local build alone does not publish the site.
+## Server environment
 
-`basePath: '/florelle'` handles Next links, router navigation and `_next` files. A separate `assetPrefix` is unnecessary (it is intended for a CDN and does not prefix public files). `assetPath()` prefixes image/srcset, WebGL texture, logo, favicon and preload URLs. CSS references are bundled from relative public file imports, so Next prefixes the emitted assets. Retina backgrounds use a resolution media query because this Turbopack version does not resolve file imports inside `image-set()`. `trailingSlash: true` produces directory indexes for direct navigation/reloads. `.nojekyll` is added after verification.
+Start with root `.env.example`, replacing example values on the server. Required values:
 
-### Static compatibility audit
+- PostgreSQL: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`. Use a random hexadecimal password so it is safe inside the derived database URL.
+- Auth: independent `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` (at least32 random characters each).
+- Mail: `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, `EMAIL_FROM`.
+- FX: `FX_API_KEY`; use `FX_OFFLINE=false` for provider updates.
+- Public HTTPS origins: `PUBLIC_FRONTEND_URL`, `PUBLIC_API_URL` (ending `/api/v1`).
+- Payments: initially `PAYMENT_PROVIDER=disabled`. To enable Arcopay, set `arcopay` and `ARCOPAY_API_URL`, `ARCOPAY_API_KEY`, `ARCOPAY_BEARER_TOKEN`, `ARCOPAY_PUBLIC_KEY`.
+- Optional VV Admin: `FLORELLE_INTEGRATION_TOKEN`, `VV_ADMIN_INTEGRATION_SECRET`, `VV_ADMIN_INTEGRATION_ENABLED`, `VV_ADMIN_WEBHOOK_URL`, `VV_ADMIN_WEBHOOK_SITE_KEY`, `VV_ADMIN_WEBHOOK_SECRET`, `VV_ADMIN_WEBHOOK_SECRET_VERSION`.
 
-- `src/app/api/account/route.ts`: GET/POST/PATCH, request bodies, HttpOnly session cookies, password hashing and SQLite — server-only.
-- `src/app/api/orders/route.ts`: authenticated reads/writes and server-validated draft orders — server-only.
-- `src/app/api/health/route.ts`: dynamic database health probe — server-only.
-- `src/lib/database.ts`: Node filesystem/crypto/SQLite and `next/headers` cookies — reachable only from those API handlers.
-- No Server Actions (`use server`), middleware/proxy, runtime rewrites/redirects, ISR or optimized `next/image` dependencies were found.
-- The catch-all route previously read server `searchParams` and had no `generateStaticParams`. Public routes and all unique product slugs are now enumerated; seller selection is read in a small client query component inside Suspense. Unknown paths receive the static 404. Arbitrary `/orders/:id` and `/payment/:id` remain supported only by the server target.
-- Pages discovers only `.tsx` route files via `pageExtensions`; all existing Node API handlers remain `.ts` and are excluded. Keep UI route files `.tsx` and server handlers `.ts`. The postbuild verifier rejects any exported `api` directory. Shared `.ts` libraries still work as ordinary imports.
-- `scripts/verify-static-export.mjs` checks every public/product HTML file and local HTML/CSS URL, including image srcsets; it fails on missing files or unprefixed root URLs.
+Compose derives Docker-only `DATABASE_URL` and `REDIS_URL`, and overrides internal listening ports/media/upstream paths. Secrets never enter build args or images. Frontend's build-time upstream defaults to the same internal backend address as its runtime override.
 
-## Full server application
+## Persistent data and first installation
 
-`npm run build:server` retains `output: 'standalone'`, root URLs and every API handler. `npm start` runs that build. `npm run dev` also retains the full server functionality. Build targets share `.next`, so rebuild the desired target before starting it.
+Create these server paths before starting:
 
-The server needs Node.js 24 and a persistent writable SQLite disk. Do not deploy this SQLite configuration to an ephemeral/serverless filesystem.
+| Data | Host path | Container path |
+|---|---|---|
+| PostgreSQL | `/opt/florelle/volumes/postgres` | `/var/lib/postgresql/data` |
+| Redis | `/opt/florelle/volumes/redis` | `/data` |
+| Images | `/opt/florelle/volumes/media` | `/app/media` |
 
-## Render from GitHub
+Media must be writable by UID/GID1000 (backend user `node`). The PostgreSQL/Redis images initialize their own data directories. Named volumes and host source mounts are absent from stage Compose.
 
-1. Connect `VV-organization/florelle` to Render using New → Blueprint. The repository includes `render.yaml` and `Dockerfile`.
-2. Review the Starter service and 1 GB persistent disk cost in Render before creating resources. Nothing is purchased by committing this configuration.
-3. Render builds the production image, mounts `/app/data`, and waits for `/api/health`. The default HTTPS origin is read from `RENDER_EXTERNAL_URL`.
-4. For a custom domain set `APP_ORIGIN` to its exact HTTPS origin (no trailing slash). Keep one running instance while using SQLite.
-5. Back up the SQLite database using a SQLite-aware backup before migrations or disk changes; a Git push is not a database backup.
+An empty database receives schema migrations automatically, but migrations do not invent catalog data. Before exposing the first installation, restore the prepared Florelle database and copy the contents of `backend/.runtime/media` into the server media directory, or run the documented source importer against the stage database. Use [backend import instructions](backend/README.md). Do not reuse a Flower Point database. The original frontend photographs remain reproducible from Git commit `130ef91`; the migration JSON lives in `backend/import-data`.
 
-The GitHub workflow builds on Linux, builds the actual Docker image, starts it and verifies assets, registration, sessions, isolation and order drafts. Automatic Render deploys wait for checks to pass. The workflow uses an isolated disposable database.
+Keep catalog initialization separate from subsequent deploys: never reset live inventory/users/orders. Back up PostgreSQL and the media directory together, and test restoration on an isolated instance. The one-shot migration service finishes before backend startup; Redis and PostgreSQL health checks gate dependents.
 
-## Other Docker hosts
+## Ports and external infrastructure
 
-Build with `docker build -t florelle .`. Run with a persistent volume at `/app/data`, `APP_ORIGIN` set to the public HTTPS origin, port 3000 exposed behind HTTPS, and a health check at `/api/health`. The container runs as the unprivileged `node` user; the volume must be writable by UID 1000.
+| Service | Host bind | Container listen |
+|---|---|---|
+| Frontend | `127.0.0.1:3000` | `0.0.0.0:3000` |
+| Backend | `127.0.0.1:3001` | `0.0.0.0:3000` |
+| PostgreSQL / Redis | not published | internal5432 /6379 |
 
-## Local production check
+Reverse proxy, TLS and DNS are managed separately and are not part of this repository's deploy. The frontend serves browser routes and proxies `/api/v1` and `/media` internally. External infrastructure must route operational endpoints `/admin/integration`, `/.well-known/vv-admin` and `/health` to backend port3001. Preserve the public host/protocol, HTTPS cookies and a10MB upload limit. No extra proxy service is started by this Compose.
 
-`npm ci && npm run build:server` then `HOSTNAME=127.0.0.1 PORT=5195 APP_ORIGIN=http://127.0.0.1:5195 DATA_DIR=/tmp/florelle-production-check npm start`. In a second terminal run `TEST_BASE_URL=http://127.0.0.1:5195 npm test`.
+## Local development and validation
 
-A successful build is not a completed public deployment. The store still saves draft orders only and has no payment integration. Typography licensing is recorded in TYPOGRAPHY.md.
+`backend/compose.local.yaml` remains a development-only PostgreSQL/Redis/Mailpit stack on isolated ports. Its existing local volumes are retained; it is not a stage deployment alternative. Local backend/frontend env examples remain in their subdirectories.
+
+Before deploying, validate root Compose with test env values (`docker compose config --quiet`) and build (`docker compose build`). Never commit the root `.env`. Workflow always deletes its temporary root copy; the source file in `~/.envs/florelle/.env` stays on the server.
+
+The previous `backend/docker-compose.yml` (named volumes, embedded proxy and8080 port) and `backend/deploy/nginx.conf` were removed. Nested CI files were moved to root and their working directories corrected. No GitHub Pages/Render deployment is active.

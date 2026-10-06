@@ -1,0 +1,25 @@
+name: florelle-local
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: florelle
+      POSTGRES_PASSWORD: florelle-local-only
+      POSTGRES_DB: florelle
+    ports: ["127.0.0.1:55444:5432"]
+    volumes: ["florelle_pg:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U florelle -d florelle"]
+      interval: 2s
+      retries: 20
+  redis:
+    image: redis:7-alpine
+    ports: ["127.0.0.1:56389:6379"]
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    volumes: ["florelle_redis:/data"]
+  mail:
+    image: axllent/mailpit:v1.27
+    ports: ["127.0.0.1:51025:1025", "127.0.0.1:58025:8025"]
+volumes:
+  florelle_pg:
+  florelle_redis:

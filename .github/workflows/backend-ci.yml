@@ -1,0 +1,40 @@
+name: Backend checks
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: florelle
+          POSTGRES_PASSWORD: ci-test-only
+          POSTGRES_DB: florelle_test
+        ports: ['5432:5432']
+        options: --health-cmd="pg_isready -U florelle -d florelle_test" --health-interval=5s --health-timeout=5s --health-retries=10
+    env:
+      DATABASE_URL: postgresql://florelle:ci-test-only@127.0.0.1:5432/florelle_test
+      TEST_DATABASE_URL: postgresql://florelle:ci-test-only@127.0.0.1:5432/florelle_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - run: npm install -g pnpm@10.30.3
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:migrate
+      - name: Seed isolated delivery fixtures
+        run: |
+          node --input-type=module <<'JS'
+          import postgres from 'postgres';
+          import {readFileSync} from 'node:fs';
+          const sql=postgres(process.env.DATABASE_URL);
+          const delivery=JSON.parse(readFileSync('import-data/delivery.json','utf8'));
+          await sql`insert into storefront_settings (key,value) values ('delivery',${sql.json(delivery)}) on conflict do nothing`;
+          await sql.end();
+          JS
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build

@@ -1,9 +1,20 @@
-node_modules
-.next
 .git
-.env*
-data
-output
-*.tsbuildinfo
+.github
+.env
+.env.*
+!.env.example
+node_modules
+dist
+build
+coverage
+test-results
+*.log
 
-out/
+.artifacts
+**/node_modules
+**/.next
+**/.runtime
+**/backups
+**/.env
+**/.env.*
+**/dist

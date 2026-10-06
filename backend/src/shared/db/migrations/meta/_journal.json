@@ -1,0 +1,202 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1775811119880,
+      "tag": "0000_thick_dakota_north",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775819989885,
+      "tag": "0001_majestic_grim_reaper",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1775834179887,
+      "tag": "0002_spicy_maximus",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1775834231324,
+      "tag": "0003_solid_nomad",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1777456429933,
+      "tag": "0004_spotty_genesis",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1777848319154,
+      "tag": "0005_stiff_green_goblin",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1777848400000,
+      "tag": "0006_rename_quantity_boxes",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1782324644347,
+      "tag": "0007_many_sabretooth",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1782329814449,
+      "tag": "0008_mean_hannibal_king",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1782330234093,
+      "tag": "0009_dry_reaper",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1782658124734,
+      "tag": "0010_summer_collection_copy",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1783595025002,
+      "tag": "0011_replace_eur_with_try",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1783597061000,
+      "tag": "0012_replace_usd_with_kzt",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1783612000000,
+      "tag": "0013_order_delivery_totals",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1783944167000,
+      "tag": "0014_cart_checkout_claim",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1786707077000,
+      "tag": "0015_vv_admin_integration",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1786708048000,
+      "tag": "0016_vv_admin_outbox_dispatch_lease",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1786708956000,
+      "tag": "0017_synthetic_scenario_idempotency",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1786709375000,
+      "tag": "0018_synthetic_scenario_replay_evidence",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1786731000000,
+      "tag": "0019_vv_admin_scenario_run_id_text",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1787055200000,
+      "tag": "0020_catalog_protocol",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1787131200000,
+      "tag": "0021_catalog_seller_management",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1787317200000,
+      "tag": "0022_email_verification_challenges",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1787317201000,
+      "tag": "0023_florelle_catalog",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1787317202000,
+      "tag": "0024_florelle_auth",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1787317203000,
+      "tag": "0025_florelle_checkout",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1787317204000,
+      "tag": "0026_florelle_profile_company",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1787317205000,
+      "tag": "0027_registration_ownership",
+      "breakpoints": true
+    }
+  ]
+}
