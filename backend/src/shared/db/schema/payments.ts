@@ -9,7 +9,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { orders } from './orders';
 
-export const paymentProviderEnum = pgEnum('payment_provider', ['arcopay']);
+export const paymentProviderEnum = pgEnum('payment_provider', ['arcopay', 'arc_pay']);
 export const paymentStatusEnum = pgEnum('payment_status', [
   'pending',
   'completed',

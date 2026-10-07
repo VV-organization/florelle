@@ -45,12 +45,15 @@ export const envSchema = z.object({
     .gt(1, 'PLATFORM_RETAIL_MARKUP must be > 1')
     .default(2.5),
 
-  PAYMENT_PROVIDER: z.enum(['disabled', 'mock', 'arcopay']).default('disabled'),
+  PAYMENT_PROVIDER: z.enum(['disabled', 'mock', 'arcopay', 'arc_pay']).default('disabled'),
   FX_OFFLINE: z.preprocess(emptyToUndefined, z.enum(['true','false']).default('false')).transform(v => v === 'true'),
   MEDIA_ROOT: z.string().default('.runtime/media'),
   PUBLIC_API_URL: optionalUrl,
   PUBLIC_FRONTEND_URL: optionalUrl,
 
+  ARC_PAY_BASE_URL: z.preprocess(emptyToUndefined, z.string().url().default('https://api.arcpay.space/v1')),
+  ARC_PAY_SECRET_KEY: optionalSecret,
+  ARC_PAY_WEBHOOK_SECRET: optionalSecret,
   ARCOPAY_API_URL: optionalUrl,
   ARCOPAY_API_KEY: optionalSecret,
   ARCOPAY_BEARER_TOKEN: optionalSecret,
@@ -67,6 +70,17 @@ export const envSchema = z.object({
   VV_ADMIN_INTEGRATION_SECRET: optionalSecret,
   FLORELLE_INTEGRATION_TOKEN: optionalSecret,
   FLOWER_POINT_INTEGRATION_TOKEN: optionalSecret,
+}).superRefine((value, ctx) => {
+  if (value.PAYMENT_PROVIDER !== 'arc_pay') return;
+  for (const field of ['ARC_PAY_SECRET_KEY','ARC_PAY_WEBHOOK_SECRET','PUBLIC_FRONTEND_URL','PUBLIC_API_URL'] as const) {
+    if (!value[field]) ctx.addIssue({code:z.ZodIssueCode.custom,path:[field],message:'Required for Arc Pay'});
+  }
+  if (value.ARC_PAY_SECRET_KEY && !/^sk_(test|live)_\S+$/.test(value.ARC_PAY_SECRET_KEY)) ctx.addIssue({code:z.ZodIssueCode.custom,path:['ARC_PAY_SECRET_KEY'],message:'Expected Arc Pay secret key'});
+  for (const field of ['ARC_PAY_BASE_URL','PUBLIC_FRONTEND_URL','PUBLIC_API_URL'] as const) {
+    if (!value[field]) continue;
+    try {const url=new URL(value[field]!);if(url.protocol!=='https:' || url.username || url.password) throw Error();}
+    catch {ctx.addIssue({code:z.ZodIssueCode.custom,path:[field],message:'An HTTPS URL without credentials is required'});}
+  }
 });
 
 const parsed = envSchema.safeParse(process.env);

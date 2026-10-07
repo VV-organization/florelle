@@ -158,7 +158,7 @@ export class IntegrationService {
   constructor(
     private readonly db: IntegrationDatabase,
     private readonly redis: ReadinessRedis,
-    private readonly paymentProvider: PaymentProvider | undefined,
+    private readonly paymentProvider: PaymentProvider | { assertAvailable(): Promise<void> } | undefined,
     private readonly config: IntegrationConfig,
     private ordersService?: SafeScenarioCheckout,
   ) {}
@@ -236,9 +236,7 @@ export class IntegrationService {
           status: isPaymentReached ? 'pending' : input.payment.status,
           method: {
             type: 'sbp',
-            displayName: input.payment.provider === 'arcopay'
-              ? 'Arcopay SBP'
-              : 'SBP',
+            displayName: input.payment.provider === 'arc_pay' ? 'Arc Pay SBP' : input.payment.provider === 'arcopay' ? 'Arcopay SBP' : 'SBP',
             provider: input.payment.provider,
           },
           paidAt: isPaymentReached || !input.payment.paidAt
@@ -264,14 +262,18 @@ export class IntegrationService {
       this.checkPostgres(),
       this.checkRedis(),
     ]);
+    let paymentAvailable = !!this.paymentProvider;
+    if (this.paymentProvider && 'assertAvailable' in this.paymentProvider) {
+      try { await this.paymentProvider.assertAvailable(); } catch { paymentAvailable = false; }
+    }
     const checks: IntegrationReadiness['checks'] = [
       postgres,
       redis,
       {
         name: 'payment_provider',
-        status: this.paymentProvider ? 'ok' : 'not_configured',
+        status: this.paymentProvider ? (paymentAvailable ? 'ok' : 'failed') : 'not_configured',
         message: this.paymentProvider
-          ? 'Payment provider is configured'
+          ? (paymentAvailable ? 'Payment provider is configured' : 'SBP H2H is unavailable')
           : 'Payment provider is not configured',
       },
       {

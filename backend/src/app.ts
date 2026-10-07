@@ -1,3 +1,7 @@
+import { ArcPayRateGate } from './modules/payments/arc-pay-rate-gate';
+import { ArcPayClient } from './modules/payments/arc-pay-client';
+import { ArcPayService } from './modules/payments/arc-pay.service';
+import { buildArcPayRouter } from './modules/payments/arc-pay.router';
 import { ScenarioCheckoutService } from './modules/commerce/scenario-checkout.service';
 import { CommerceService } from './modules/commerce/commerce.service';
 import { CommerceWebhookService } from './modules/commerce/commerce-webhook.service';
@@ -141,6 +145,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   const currencyService = new CurrencyService(fxService);
 
   const paymentProvider = createPaymentProvider(fxService);
+  const arcClient = env.PAYMENT_PROVIDER === 'arc_pay' ? new ArcPayClient({baseUrl:env.ARC_PAY_BASE_URL,secretKey:env.ARC_PAY_SECRET_KEY!,rateGate:new ArcPayRateGate(db,env.ARC_PAY_SECRET_KEY!.startsWith("sk_live_")?"live":"sandbox")}) : undefined;
   const integrationConfig = buildIntegrationConfig(env);
   const catalogProtocolService = new CatalogProtocolService(
     db,
@@ -149,7 +154,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   const integrationService = new IntegrationService(
     db,
     redis,
-    env.PAYMENT_PROVIDER === 'arcopay' ? paymentProvider : undefined,
+    arcClient ?? (env.PAYMENT_PROVIDER === 'arcopay' ? paymentProvider : undefined),
     integrationConfig,
   );
 
@@ -203,13 +208,23 @@ export async function buildApp(): Promise<FastifyInstance> {
     }),
   };
 
+  const arcPay = arcClient ? new ArcPayService(db, arcClient, {
+    enqueueOrderEvent: (tx,input) => VvAdminOutbox.enqueueOrderEvent(tx, {
+      eventType:input.eventType, order:input.order,
+      event:integrationService.buildOrderEvent({...input,occurredAt:new Date()}),
+    }),
+  }, notificationsService) : undefined;
   const commerceService = new CommerceService(db, fxService, paymentProvider, {
     commissionPercent: env.PLATFORM_COMMISSION_PERCENT, cartTtlHours: 24,
     callbackUrl: `${apiBaseUrl}/payments/callback`, successUrl: `${frontendBaseUrl}/orders/{orderId}`,
-    failUrl: `${frontendBaseUrl}/orders/{orderId}`, paymentsEnabled: env.PAYMENT_PROVIDER === 'arcopay',
-  }, ordersIntegrationOutbox);
+    failUrl: `${frontendBaseUrl}/orders/{orderId}`, paymentsEnabled: ['arcopay','arc_pay'].includes(env.PAYMENT_PROVIDER),
+  }, ordersIntegrationOutbox, arcPay);
   integrationService.setScenarioOrdersService(new ScenarioCheckoutService(db, commerceService));
-  const paymentRecoveryTimer = setInterval(() => commerceService.recoverPaymentLinks().catch(error => app.log.error({err:error}, 'payment recovery failed')), 15000);
+  const recoverPayments = async () => {
+    await commerceService.recoverPaymentLinks();
+    await arcPay?.tick();
+  };
+  const paymentRecoveryTimer = setInterval(() => recoverPayments().catch(() => app.log.error('payment recovery failed')), 15000);
   paymentRecoveryTimer.unref();
   app.addHook('onClose', () => clearInterval(paymentRecoveryTimer));
   await app.register(buildMediaRouter(env.MEDIA_ROOT));
@@ -254,6 +269,7 @@ export async function buildApp(): Promise<FastifyInstance> {
       await api.register(buildStorefrontRouter(db, catalogService, fxService));
       await api.register(buildCommerceRouter(commerceService, app.authenticate));
       await api.register(buildPaymentsRouter(webhookService));
+      if (arcPay) await api.register(buildArcPayRouter(arcPay, env.ARC_PAY_WEBHOOK_SECRET!));
     },
     { prefix: API_PREFIX },
   );
@@ -262,7 +278,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 }
 
 function createPaymentProvider(fxService: FxService): PaymentProvider {
-  if (env.PAYMENT_PROVIDER !== 'arcopay') {
+  if (env.PAYMENT_PROVIDER !== 'arcopay' && !(env.ARCOPAY_API_URL && env.ARCOPAY_API_KEY && env.ARCOPAY_BEARER_TOKEN && env.ARCOPAY_PUBLIC_KEY)) {
     return new DisabledPaymentProvider();
   }
 

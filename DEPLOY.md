@@ -22,7 +22,7 @@ Start with root `.env.example`, replacing example values on the server. Required
 - Mail: `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, `EMAIL_FROM`.
 - FX: `FX_API_KEY`; use `FX_OFFLINE=false` for provider updates.
 - Public HTTPS origins: `PUBLIC_FRONTEND_URL`, `PUBLIC_API_URL` (ending `/api/v1`).
-- Payments: initially `PAYMENT_PROVIDER=disabled`. To enable Arcopay, set `arcopay` and `ARCOPAY_API_URL`, `ARCOPAY_API_KEY`, `ARCOPAY_BEARER_TOKEN`, `ARCOPAY_PUBLIC_KEY`.
+- Payments: initially `PAYMENT_PROVIDER=disabled`. For new Arc Pay hosted SBP checkout, use `PAYMENT_PROVIDER=arc_pay`, `ARC_PAY_BASE_URL=https://api.arcpay.space/v1`, `ARC_PAY_SECRET_KEY`, and the portal endpoint `ARC_PAY_WEBHOOK_SECRET`. `PUBLIC_FRONTEND_URL` and `PUBLIC_API_URL` must be HTTPS. Follow [Arc Pay activation and verification](docs/ARC-PAY.md). Legacy `arcopay` settings are separate; preserve them while legacy attempts remain unresolved.
 - Optional VV Admin: `FLORELLE_INTEGRATION_TOKEN`, `VV_ADMIN_INTEGRATION_SECRET`, `VV_ADMIN_INTEGRATION_ENABLED`, `VV_ADMIN_WEBHOOK_URL`, `VV_ADMIN_WEBHOOK_SITE_KEY`, `VV_ADMIN_WEBHOOK_SECRET`, `VV_ADMIN_WEBHOOK_SECRET_VERSION`.
 
 Compose derives Docker-only `DATABASE_URL` and `REDIS_URL`, and overrides internal listening ports/media/upstream paths. Secrets never enter build args or images. Frontend's build-time upstream defaults to the same internal backend address as its runtime override.

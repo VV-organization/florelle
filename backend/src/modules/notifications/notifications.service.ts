@@ -33,6 +33,7 @@ export type SendOrderPaidInput = {
   to: string;
   orderId: string;
   totalUsd: string;
+  amountRub?: string;
   paidAt: Date;
   idempotencyKey: string;
 };
@@ -74,9 +75,11 @@ export class NotificationsService {
     const message = renderOrderPaidEmail({
       orderId: input.orderId,
       totalUsd: input.totalUsd,
+      amountRub: input.amountRub,
       paidAt: input.paidAt,
     });
     const result = (await this.transport.sendMail({
+      messageId: `<order-paid.${input.orderId.replace(/[^a-zA-Z0-9-]/g, "")}@florelle>`,
       from: this.from,
       to: input.to,
       subject: message.subject,
@@ -123,10 +126,11 @@ export function renderRegistrationCodeEmail(input: {
 export function renderOrderPaidEmail(input: {
   orderId: string;
   totalUsd: string;
+  amountRub?: string;
   paidAt: Date;
 }): RenderedEmail {
   const orderId = escapeHtml(input.orderId);
-  const total = `$${input.totalUsd}`;
+  const total = input.amountRub ? `${input.amountRub} ₽` : `$${input.totalUsd}`;
   const paidAt = formatEmailExpiration(input.paidAt);
   return {
     subject: 'Оплата заказа принята — Florelle',

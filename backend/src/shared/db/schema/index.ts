@@ -15,3 +15,5 @@ export * from './catalog-protocol';
 
 export * from './storefront';
 export * from './checkout';
+
+export * from './arc-pay';

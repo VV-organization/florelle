@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { Database } from "../../shared/db/client";
 import { payments } from "../../shared/db/schema/payments";
 import { orders } from "../../shared/db/schema/orders";
@@ -35,7 +35,7 @@ export class CommerceWebhookService extends WebhookService {
     let [attempt] = await this.database
       .select()
       .from(checkoutAttempts)
-      .where(eq(checkoutAttempts.externalId, payload.externalId))
+      .where(and(eq(checkoutAttempts.externalId, payload.externalId), eq(checkoutAttempts.provider, "arcopay")))
       .limit(1);
     if (!attempt && payload.externalId && payload.merchantOrderId) {
       // A signed provider callback can recover an identity lost with /create's response.
@@ -44,7 +44,7 @@ export class CommerceWebhookService extends WebhookService {
         const [intent] = await tx
           .select()
           .from(checkoutAttempts)
-          .where(eq(checkoutAttempts.merchantOrderId, payload.merchantOrderId))
+          .where(and(eq(checkoutAttempts.merchantOrderId, payload.merchantOrderId), eq(checkoutAttempts.provider, "arcopay")))
           .for("update");
         if (
           !intent ||

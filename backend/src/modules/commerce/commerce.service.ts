@@ -26,6 +26,7 @@ import {
   type CheckoutInput,
   type DeliveryCountry,
 } from "./pricing";
+import type { ArcPayService } from '../payments/arc-pay.service';
 import type { MediaPhoto } from "../../shared/db/schema/storefront";
 
 type Connection =
@@ -61,6 +62,7 @@ export class CommerceService {
     private provider: PaymentProvider,
     private config: OrdersServiceConfig & { paymentsEnabled?: boolean },
     private outbox?: OrdersIntegrationOutbox,
+    private arcPay?: ArcPayService,
   ) {
     this.legacy = new OrdersService(db, fx, provider, config, outbox);
   }
@@ -292,6 +294,7 @@ export class CommerceService {
       this.rates(),
       this.settings(),
     ]);
+    const validatePaymentAmount = await this.arcPay?.prepareCheckout();
     const orderId = await this.db.transaction(async (tx) => {
       await tx
         .select({ id: users.id })
@@ -325,6 +328,7 @@ export class CommerceService {
       );
       if (Number(quote.minimumMissingRub) > 0)
         throw fail("MINIMUM_ORDER", "Минимальная сумма заказа — 1 000 ₽", 400);
+      validatePaymentAmount?.(quote.paymentAmountMinor);
       const merchantOrderId = "FLR-" + randomUUID();
       const snapshot: OrderSnapshot = {
         ...quote,
@@ -387,7 +391,10 @@ export class CommerceService {
             availableStems: sql`${listings.availableStems} - ${item.reservedStems}`,
           })
           .where(eq(listings.id, item.listingId));
+      const attemptId = randomUUID();
       await tx.insert(checkoutAttempts).values({
+        id: attemptId,
+        ...(this.arcPay ? {provider: "arc_pay", environment: this.arcPay.environment, requestSnapshot: this.arcPay.sessionRequest({attemptId,orderId:order.id,amount:quote.paymentAmountMinor,email:user.email,returnUrl:this.config.successUrl.replace("{orderId}",order.id)})} : {}),
         orderId: order.id,
         merchantOrderId,
         amountMinor: quote.paymentAmountMinor,
@@ -397,7 +404,7 @@ export class CommerceService {
         source: syntheticRunId ? "scenario" : "customer",
         order,
         items: itemRows,
-        payment: { status: "pending", provider: "arcopay", paidAt: null },
+        payment: { status: "pending", provider: this.arcPay ? "arc_pay" : "arcopay", paidAt: null },
       });
       await tx.delete(carts).where(eq(carts.id, cart.id));
       return order.id;
@@ -417,6 +424,7 @@ export class CommerceService {
       .where(eq(checkoutAttempts.orderId, orderId))
       .limit(1);
     if (!attempt) return;
+    if (attempt.provider === "arc_pay") { await this.arcPay?.advance(orderId); return; }
     if (["paid", "failed", "ready", "review"].includes(attempt.state)) return;
     // A crash after beginning /create has an unknown outcome. Never call it twice.
     if (attempt.state === "creating") {
@@ -574,7 +582,7 @@ export class CommerceService {
           source: order.synthetic ? "scenario" : "customer",
           order,
           items,
-          payment: { status: "pending", provider: "arcopay", paidAt: null },
+          payment: { status: "pending", provider: this.arcPay ? "arc_pay" : "arcopay", paidAt: null },
         });
       });
     } catch {
@@ -609,8 +617,10 @@ export class CommerceService {
       status: order.status,
       createdAt: order.createdAt.toISOString(),
       paymentUrl:
-        order.status === "pending" ? (attempt?.paymentUrl ?? null) : null,
-      paymentStatus: ["paid", "shipped", "delivered"].includes(order.status)
+        order.status === "pending" && attempt?.state !== "review" ? (attempt?.paymentUrl ?? null) : null,
+      paymentAmountMinor: attempt?.amountMinor ?? snapshot?.paymentAmountMinor,
+      paymentCurrency: "RUB" as const,
+      paymentStatus: attempt?.state === "review" ? "review" : ["paid", "shipped", "delivered"].includes(order.status)
         ? "paid"
         : order.status === "cancelled"
           ? "failed"
@@ -641,6 +651,10 @@ export class CommerceService {
   }
   async resume(userId: string, id: string) {
     await this.getOrder(userId, id);
+    if (this.arcPay) {
+      try { await this.arcPay.reconcile(id); }
+      catch { throw fail("PAYMENT_STATUS_UNAVAILABLE", "Не удалось проверить статус оплаты. Попробуйте позже", 503); }
+    }
     await this.advancePayment(id);
     return this.getOrder(userId, id);
   }
@@ -649,7 +663,7 @@ export class CommerceService {
       .select({ orderId: checkoutAttempts.orderId })
       .from(checkoutAttempts)
       .where(
-        sql`${checkoutAttempts.state} in ('created','created_external','creating')`,
+        sql`${checkoutAttempts.provider} = 'arcopay' AND ${checkoutAttempts.state} in ('created','created_external','creating')`,
       )
       .limit(25);
     for (const row of rows) await this.advancePayment(row.orderId);

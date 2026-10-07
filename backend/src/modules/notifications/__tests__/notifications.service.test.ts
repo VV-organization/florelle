@@ -92,3 +92,10 @@ describe('NotificationsService', () => {
     );
   });
 });
+
+it('uses the persisted RUB amount and a stable SMTP Message-ID for Arc orders',async()=>{
+ const sendMail=vi.fn().mockResolvedValue({messageId:'accepted'});
+ const service=new NotificationsService('support@example.com',{sendMail} as unknown as MailTransport);
+ await service.sendOrderPaid({to:'buyer@example.test',orderId:'arc-order',totalUsd:'18.86',amountRub:'1885.63',paidAt:new Date(),idempotencyKey:'order-paid/arc-order'});
+ expect(sendMail.mock.calls[0]?.[0]).toMatchObject({text:expect.stringContaining('1885.63 ₽'),messageId:'<order-paid.arc-order@florelle>'});
+});

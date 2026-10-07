@@ -113,3 +113,10 @@ describe('envSchema — SMTP email', () => {
 });
 
 it("preserves independent Florelle operator token",()=>{expect(envSchema.parse({...validBase,FLORELLE_INTEGRATION_TOKEN:"local-test-token"})).toHaveProperty("FLORELLE_INTEGRATION_TOKEN","local-test-token");});
+
+describe('Arc Pay configuration',()=>{
+ const arc={...validBase,PAYMENT_PROVIDER:'arc_pay',ARC_PAY_SECRET_KEY:'sk_test_local',ARC_PAY_WEBHOOK_SECRET:'local-webhook-secret',PUBLIC_FRONTEND_URL:'https://shop.test',PUBLIC_API_URL:'https://shop.test/api/v1'};
+ it('accepts the new provider with independent secret and webhook keys',()=>{const value=envSchema.parse(arc);expect(value.PAYMENT_PROVIDER).toBe('arc_pay');expect(value.ARC_PAY_BASE_URL).toBe('https://api.arcpay.space/v1');});
+ it.each(['ARC_PAY_SECRET_KEY','ARC_PAY_WEBHOOK_SECRET','PUBLIC_FRONTEND_URL','PUBLIC_API_URL'])('requires %s when enabled',name=>{expect(envSchema.safeParse({...arc,[name]:''}).success).toBe(false);});
+ it('requires HTTPS return origins',()=>{expect(envSchema.safeParse({...arc,PUBLIC_FRONTEND_URL:'http://shop.test'}).success).toBe(false);});
+});
