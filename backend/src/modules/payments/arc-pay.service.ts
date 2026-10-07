@@ -281,7 +281,7 @@ export class ArcPayService {
         and(
           eq(arcPayEvents.status, "received"),
           eq(arcPayEvents.environment, this.environment),
-          lte(arcPayEvents.nextAttemptAt, new Date()),
+          lte(arcPayEvents.nextAttemptAt, sql`now()`),
           sql`(${arcPayEvents.leaseUntil} IS NULL OR ${arcPayEvents.leaseUntil} < now())`,
         ),
       )

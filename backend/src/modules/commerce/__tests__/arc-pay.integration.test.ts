@@ -613,7 +613,14 @@ describeDatabase("Arc Pay durable checkout with PostgreSQL", () => {
       event_type: "payment.captured",
       data: { payment_id: providerId },
     });
-    await arc.processEvents();
+    // Database timestamps have sub-millisecond precision and may be ahead of the app clock.
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(Date.now() - 1000);
+    try {
+      await arc.processEvents();
+    } finally {
+      vi.useRealTimers();
+    }
     expect((await db.select().from(arcPayEvents))[0]).toMatchObject({
       status: "received",
       retryCount: 1,
