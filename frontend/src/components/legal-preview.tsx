@@ -1,22 +1,6 @@
 'use client';
-import Link from 'next/link';
 import {useShop} from './shop-context';
-const privacy=[
- ['Ваши данные','Для оформления заказа используются имя получателя, телефон и адрес доставки. Данные аккаунта включают имя и электронную почту.','Your information','Checkout uses the recipient’s name, phone number and delivery address. Account information includes your name and email.'],
- ['Корзина и настройки','Корзина, выбранный язык и валюта сохраняются в вашем браузере, чтобы вы могли вернуться к выбору цветов.','Cart and preferences','Your cart, language and currency are stored in your browser so you can return to your selection.'],
- ['Личный кабинет','В личном кабинете можно просматривать заказы и изменять имя, телефон и сведения о компании.','Your account','Your account lets you view orders and update your name, phone number and company information.'],
- ['Безопасность','Не сообщайте пароль и коды подтверждения другим людям. Завершайте сеанс после работы на общем устройстве.','Security','Keep your password and verification codes private. Sign out when using a shared device.'],
- ['Управление настройками','Вы можете удалить сохранённые данные сайта в настройках браузера. После удаления потребуется снова выбрать язык и валюту и войти в аккаунт.','Managing preferences','You can remove saved site data in your browser settings. Afterwards, select your language and currency and sign in again.']
-];
-const terms=[
- ['Выбор цветов','В каталоге представлены розничные и оптовые предложения. На странице цветка указаны сорт, плантация, длина стебля, наличие и формат заказа.','Choosing flowers','The catalog includes retail and wholesale offers. Each product shows its variety, grower, stem length, availability and order format.'],
- ['Цены и валюта','Выберите RUB, KZT или TRY в меню сайта. Для розницы указана цена за стебель, для опта — также количество стеблей и стоимость коробки.','Prices and currencies','Choose RUB, KZT or TRY in the site menu. Retail prices are per stem; wholesale offers also show stems per box and the box total.'],
- ['Оформление','Добавьте цветы в корзину, проверьте количество и перейдите к оформлению. Укажите получателя, телефон, адрес, дату и удобное время доставки.','Checkout','Add flowers to your cart, check quantities and continue to checkout. Enter the recipient, phone, address, date and preferred delivery window.'],
- ['Доставка','Стоимость рассчитывается с учётом страны, города и формата заказа. Для оптовых поставок учитывается вес. Подробные тарифы доступны в разделе доставки.','Delivery','Delivery costs depend on the country, city and order format. Wholesale deliveries also account for weight. Detailed rates are available on the delivery page.'],
- ['Оплата','Перед оплатой проверьте состав заказа, валюту и итоговую сумму. Если оплата не прошла, откройте заказ и повторите попытку.','Payment','Check the items, currency and total before paying. If payment fails, open your order and try again.'],
- ['Ваш заказ','Информация о заказе и его текущем статусе доступна в разделе «Мои заказы». Сохраните номер заказа для дальнейших обращений.','Your order','Order details and the current status are available in My orders. Keep the order number for future enquiries.']
-];
-export default function LegalPreview({kind}:{kind:'privacy'|'terms'|'contacts'}){
- const s=useShop(),contact=kind==='contacts',sections=kind==='privacy'?privacy:terms;
- return <main className="page-shell commerce-page"><h1>{contact?s.t('На','Let’s stay in'):kind==='privacy'?s.t('Конфиденциальность','Privacy'):s.t('Условия покупки','Purchase terms')} {contact&&<span className="script">{s.t('связи','touch')}</span>}</h1>{contact?<div className="commerce-columns"><section><h2>Florelle</h2><p>{s.t('Цветы для ваших чувств и вашего дела. Всё о выборе, доставке и заказах — рядом.','Flowers for your feelings and your business. Find everything about selection, delivery and orders here.')}</p></section><nav className="contact-details" aria-label={s.t('Помощь покупателю','Customer help')}><div><Link className="text-link" href="/delivery">{s.t('Доставка в ваш город','Delivery to your city')}</Link></div><div><Link className="text-link" href="/orders">{s.t('Мои заказы','My orders')}</Link></div><div><Link className="text-link" href="/account">{s.t('Личный кабинет','Your account')}</Link></div><div><Link className="text-link" href="/catalog?segment=b2b">{s.t('Цветы для бизнеса','Flowers for business')}</Link></div></nav></div>:<div className="legal-columns"><nav aria-label={s.t('Разделы документа','Document sections')}>{sections.map(([ru,,en],i)=><a href={'#legal-'+i} key={ru}>{s.t(ru,en)}</a>)}</nav><article>{sections.map(([ru,text,en,english],i)=><section id={'legal-'+i} key={ru}><h2>{s.t(ru,en)}</h2><p>{s.t(text,english)}</p></section>)}</article></div>}</main>
+export default function LegalPreview({kind}:{kind:'privacy'|'terms'}){
+ const s=useShop();
+ return <main className="page-shell commerce-page"><h1>{kind==='privacy'?s.t('Политика конфиденциальности','Privacy Policy'):s.t('Пользовательское соглашение','User Agreement')}</h1></main>
 }

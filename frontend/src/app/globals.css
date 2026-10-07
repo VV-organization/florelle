@@ -332,3 +332,5 @@ h2.single-line-heading{font-size:clamp(30px,3.5vw,60px);line-height:1.25;letter-
  .botanical-bloom{background-image:var(--botanical-bloom-3072)}
  .entry-gateway:before{background-image:linear-gradient(90deg,#2c1928f5 15%,#2c1928d9 65%,#2c1928ad),var(--botanical-green-3072)}
 }
+
+.footer-bottom{flex-wrap:wrap;align-items:center}.footer-payment-logos{display:flex;align-items:center;gap:10px}.footer-payment-logos>span{display:flex;align-items:center;justify-content:center;height:44px;padding:8px 12px;background:var(--paper);border-radius:4px}.footer-payment-logos img{display:block;width:auto;height:28px}@media(max-width:700px){.footer-bottom{grid-template-columns:1fr}.footer-bottom>span:last-child{text-align:left}.footer-payment-logos{margin-top:4px}}
