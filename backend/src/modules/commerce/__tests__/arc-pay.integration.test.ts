@@ -208,7 +208,7 @@ describeDatabase("Arc Pay durable checkout with PostgreSQL", () => {
           });
         }
         if (path.pathname.endsWith("/payments"))
-          return Response.json({ data: apiPayments, next_cursor: null });
+          return Response.json({ payments: apiPayments, total: apiPayments.length, page_size: 100 });
         const payment = apiPayments.find(
           (p) => p.id === path.pathname.split("/").at(-1),
         );

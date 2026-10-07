@@ -151,11 +151,11 @@ export class ArcPayClient {
       if (cursor) query.set("cursor", cursor);
       const page = z
         .object({
-          data: z.array(paymentSchema),
+          payments: z.array(paymentSchema),
           next_cursor: z.string().nullable().optional(),
         })
         .parse(await this.request(`/payments?${query}`));
-      matches.push(...page.data.filter((p) => p.external_id === externalId));
+      matches.push(...page.payments.filter((p) => p.external_id === externalId));
       cursor = page.next_cursor ?? undefined;
       if (cursor && seen.has(cursor)) throw Error("ARC_PAY_REPEATED_CURSOR");
       if (cursor) seen.add(cursor);

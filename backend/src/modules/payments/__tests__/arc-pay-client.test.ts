@@ -97,7 +97,7 @@ describe("Arc Pay hosted contract", () => {
       fetchFn: async (url) =>
         String(url).includes("cursor=")
           ? Response.json({
-              data: [
+              payments: [
                 {
                   id: "p2",
                   external_id: "attempt",
@@ -107,10 +107,10 @@ describe("Arc Pay hosted contract", () => {
                   payment_method: "sbp",
                 },
               ],
-              next_cursor: null,
+              total: 2, page_size: 100,
             })
           : Response.json({
-              data: [
+              payments: [
                 {
                   id: "p1",
                   external_id: "other",
@@ -120,7 +120,7 @@ describe("Arc Pay hosted contract", () => {
                   payment_method: "sbp",
                 },
               ],
-              next_cursor: "next",
+              next_cursor: "next", total: 2, page_size: 100,
             }),
     });
     expect((await client.findPayments("attempt")).map((p) => p.id)).toEqual([
