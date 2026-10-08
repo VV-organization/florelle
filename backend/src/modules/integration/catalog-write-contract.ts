@@ -48,21 +48,6 @@ export function offerWriteContract(attributes: Record<string, unknown>) {
         type: "integer",
         minimum: 1,
       },
-      delivery: {
-        type: "object",
-        properties: {
-          kind: {
-            type: "string",
-            enum: ["date"],
-          },
-          value: {
-            type: "string",
-            format: "date",
-          },
-        },
-        required: ["kind", "value"],
-        additionalProperties: false,
-      },
       isActive: {
         type: "boolean",
       },
@@ -86,7 +71,6 @@ export function offerWriteContract(attributes: Record<string, unknown>) {
         "price",
         "availability",
         "packageQuantity",
-        "delivery",
         "isActive",
       ],
     },

@@ -1,3 +1,4 @@
+import { syntheticNeedsResolution } from '../commerce/synthetic-resolution';
 import { and, desc, eq, gt, sql } from 'drizzle-orm';
 import type { Database } from '../../shared/db/client';
 import { carts, cartItems } from '../../shared/db/schema/carts';
@@ -71,7 +72,7 @@ export type ScenarioResult = {
   syntheticEntities: Array<{
     type: 'order';
     externalId: string;
-    cleanupStatus: 'cancelled' | 'failed';
+    cleanupStatus: 'cancelled' | 'failed' | 'retained';
   }>;
   steps: null;
   artifacts: null;
@@ -190,7 +191,7 @@ export class IntegrationService {
         healthCheck('exchange_rate', 'Курс валюты', `${origin}/api/v1/currency/rates`, 900),
         healthCheck('visible_catalog', 'Товары в каталоге', `${origin}/api/v1/products?limit=1`, 900),
       ],
-      syntheticScenarios: this.config.protocolSecret && this.ordersService?.durableCheckout && this.ordersService.supportsAuthoritativeCancellation && this.paymentProvider
+      syntheticScenarios: this.config.protocolSecret && this.ordersService?.durableCheckout && (this.ordersService.supportsAuthoritativeCancellation || this.ordersService.supportsDeferredCleanup) && this.paymentProvider
         ? [{
           key: 'checkout_payment_reached',
           label: 'Пользовательский тест оплаты',
@@ -306,6 +307,7 @@ export class IntegrationService {
       const existingRows = await db
         .select({
           orderId: orders.id,
+          scenarioRunId: orders.scenarioRunId,
           paymentUrlHost: orders.scenarioPaymentUrlHost,
           status: orders.status,
         })
@@ -317,17 +319,22 @@ export class IntegrationService {
           ),
         )
         .limit(1);
-      const existing = existingRows[0];
+      let existing = existingRows[0];
+      if (!existing && this.ordersService.supportsDeferredCleanup) {
+        [existing] = await db.select({ orderId: orders.id, scenarioRunId: orders.scenarioRunId, paymentUrlHost: orders.scenarioPaymentUrlHost, status: orders.status })
+          .from(orders).where(and(eq(orders.synthetic, true), syntheticNeedsResolution)).limit(1);
+      }
+      const existingRunId = existing?.scenarioRunId ?? input.scenarioRunId;
       if (existing) {
         if (!existing.paymentUrlHost) {
-          const resumed = await this.ordersService.resumeSyntheticCheckoutPaymentReached({ orderId: existing.orderId, scenarioRunId: input.scenarioRunId });
+          const resumed = await this.ordersService.resumeSyntheticCheckoutPaymentReached({ orderId: existing.orderId, scenarioRunId: existingRunId });
           if (!resumed.paymentUrl) return scenarioDown('Платёж ожидает подтверждения провайдера', 'synthetic_payment_pending', existing.orderId, 'failed');
           assertSafePaymentUrl(resumed.paymentUrl);
         }
-        if (existing.status === 'cancelled') {
+        if (existing.status === 'cancelled' && !this.ordersService.supportsDeferredCleanup) {
           return scenarioHealthy(existing.orderId, 'cancelled');
         }
-        return this.cancelReachedScenario(existing.orderId, input.scenarioRunId);
+        return this.cancelReachedScenario(existing.orderId, existingRunId);
       }
 
       const fixture =
@@ -367,7 +374,11 @@ export class IntegrationService {
         scenarioRunId,
       });
       return scenarioHealthy(orderId, 'cancelled');
-    } catch {
+    } catch (error) {
+      if (this.ordersService?.supportsDeferredCleanup) {
+        if (error instanceof AppError && error.code === 'SYNTHETIC_PAYMENT_UNRESOLVED') return scenarioHealthy(orderId, 'retained');
+        return scenarioDown('Проверка тестового платежа не пройдена', error instanceof AppError ? error.code : 'synthetic_payment_check_failed', orderId, 'failed');
+      }
       return scenarioHealthy(orderId, 'failed');
     }
   }
@@ -541,14 +552,14 @@ function assertSafePaymentUrl(paymentUrl: string): void {
 
 function scenarioHealthy(
   orderId: string,
-  cleanupStatus: 'cancelled' | 'failed',
+  cleanupStatus: 'cancelled' | 'failed' | 'retained',
 ): ScenarioResult {
   return {
     status: 'healthy',
     summary: cleanupStatus === 'cancelled'
       ? 'Пользовательский тест дошел до оплаты и отменил тестовый заказ'
-      : 'Оплата достигнута, но тестовый заказ требует очистки',
-    error: cleanupStatus === 'cancelled' ? null : 'synthetic_checkout_cleanup_failed',
+      : cleanupStatus === 'retained' ? 'Форма оплаты доступна; тестовый заказ сохранён до подтверждённого завершения платежа' : 'Оплата достигнута, но тестовый заказ требует очистки',
+    error: cleanupStatus === 'failed' ? 'synthetic_checkout_cleanup_failed' : null,
     payment: { reached: true },
     syntheticEntities: [{ type: 'order', externalId: orderId, cleanupStatus }],
     steps: null,

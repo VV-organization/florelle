@@ -219,7 +219,7 @@ export async function buildApp(): Promise<FastifyInstance> {
     callbackUrl: `${apiBaseUrl}/payments/callback`, successUrl: `${frontendBaseUrl}/orders/{orderId}`,
     failUrl: `${frontendBaseUrl}/orders/{orderId}`, paymentsEnabled: ['arcopay','arc_pay'].includes(env.PAYMENT_PROVIDER),
   }, ordersIntegrationOutbox, arcPay);
-  integrationService.setScenarioOrdersService(new ScenarioCheckoutService(db, commerceService));
+  integrationService.setScenarioOrdersService(new ScenarioCheckoutService(db, commerceService, arcPay));
   const recoverPayments = async () => {
     await commerceService.recoverPaymentLinks();
     await arcPay?.tick();

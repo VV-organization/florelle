@@ -6,7 +6,7 @@ import {
 } from 'fastify-type-provider-zod';
 import { describe, expect, it, vi } from 'vitest';
 import type { Database } from '../../../shared/db/client';
-import { errorHandler } from '../../../shared/middleware/error.middleware';
+import { AppError, errorHandler } from '../../../shared/middleware/error.middleware';
 import type { SafeScenarioCheckout } from '../../commerce/scenario-checkout.service';
 import type { PaymentProvider } from '../../payments/payment-provider';
 import { buildIntegrationConfig } from '../integration.config';
@@ -23,6 +23,55 @@ const runId = 'cmst1syntheticrun000000000001';
 const requestedAt = new Date().toISOString();
 
 describe('Florelle checkout-payment-reached scenario', () => {
+  it('advertises deferred cleanup and rechecks the previous pending order for a new run', async () => {
+    const orderId = '00000000-0000-4000-8000-000000000010';
+    const previousRunId = 'previous-run';
+    const db = createDbMock([[], [{ orderId, scenarioRunId: previousRunId, paymentUrlHost: 'pay.arcpay.space', status: 'pending' }]]);
+    const checkout = {
+      durableCheckout: true as const,
+      supportsAuthoritativeCancellation: false,
+      supportsDeferredCleanup: true,
+      createSyntheticCheckoutPaymentReached: vi.fn(),
+      resumeSyntheticCheckoutPaymentReached: vi.fn(),
+      cancelSyntheticCheckoutPaymentReached: vi.fn().mockRejectedValue(new AppError(409, 'SYNTHETIC_PAYMENT_UNRESOLVED', 'Awaiting provider')),
+    };
+    const service = createScenarioService(db, checkout);
+    expect(service.getManifest().syntheticScenarios).toHaveLength(1);
+    const result = await service.runCheckoutPaymentReachedScenario({ scenarioRunId: runId });
+    expect(result).toMatchObject({ status: 'healthy', error: null, payment: { reached: true }, syntheticEntities: [{ externalId: orderId, cleanupStatus: 'retained' }] });
+    expect(checkout.createSyntheticCheckoutPaymentReached).not.toHaveBeenCalled();
+    expect(checkout.cancelSyntheticCheckoutPaymentReached).toHaveBeenCalledWith({ orderId, scenarioRunId: previousRunId });
+    const app = await buildTestApp({ runCheckoutPaymentReachedScenario: async () => result });
+    const body = JSON.stringify(scenarioPayload());
+    const response = await app.inject({ method: 'POST', url: scenarioPath, headers: scenarioHeaders(signScenarioRequest(scenarioPath, body)), payload: body });
+    expect(response.statusCode).toBe(200);
+    expect(response.json().syntheticEntities[0].cleanupStatus).toBe('retained');
+    await app.close();
+  });
+
+  it('does not report payment reached when the retained hosted page is unavailable', async () => {
+    const orderId = '00000000-0000-4000-8000-000000000010';
+    const checkout = {
+      durableCheckout: true as const, supportsAuthoritativeCancellation: false, supportsDeferredCleanup: true,
+      createSyntheticCheckoutPaymentReached: vi.fn(), resumeSyntheticCheckoutPaymentReached: vi.fn(),
+      cancelSyntheticCheckoutPaymentReached: vi.fn().mockRejectedValue(new AppError(503, 'SYNTHETIC_HOSTED_PAGE_UNAVAILABLE', 'Page unavailable')),
+    };
+    const service = createScenarioService(createDbMock([[{ orderId, scenarioRunId: runId, paymentUrlHost: 'pay.arcpay.space', status: 'pending' }]]), checkout);
+    expect(await service.runCheckoutPaymentReachedScenario({ scenarioRunId: runId })).toMatchObject({ status: 'down', payment: { reached: false }, error: 'SYNTHETIC_HOSTED_PAGE_UNAVAILABLE' });
+  });
+
+  it('revalidates cancelled orders instead of hiding a late payment review', async () => {
+    const orderId = '00000000-0000-4000-8000-000000000010';
+    const checkout = {
+      durableCheckout: true as const, supportsAuthoritativeCancellation: false, supportsDeferredCleanup: true,
+      createSyntheticCheckoutPaymentReached: vi.fn(), resumeSyntheticCheckoutPaymentReached: vi.fn(),
+      cancelSyntheticCheckoutPaymentReached: vi.fn().mockRejectedValue(new AppError(409, 'SYNTHETIC_PAYMENT_REVIEW_REQUIRED', 'Late capture')),
+    };
+    const service = createScenarioService(createDbMock([[{ orderId, scenarioRunId: runId, paymentUrlHost: 'pay.arcpay.space', status: 'cancelled' }]]), checkout);
+    expect(await service.runCheckoutPaymentReachedScenario({ scenarioRunId: runId })).toMatchObject({ status: 'down', error: 'SYNTHETIC_PAYMENT_REVIEW_REQUIRED' });
+    expect(checkout.createSyntheticCheckoutPaymentReached).not.toHaveBeenCalled();
+  });
+
   it('rejects a missing or invalid HMAC before starting a checkout', async () => {
     const runScenario = vi.fn();
     const app = await buildTestApp({ runCheckoutPaymentReachedScenario: runScenario });

@@ -32,7 +32,7 @@ export default function EntryGateway() {
           <Link href="/b2b" className="entry-option" onClick={e=>enter(e,'b2b')}><span className="entry-frame" data-motion-frame="" aria-hidden="true"><i/><i/><i/><i/></span>
             <span className="eyebrow">{shop.t('ФЛОРИСТАМ, СТУДИЯМ И МАГАЗИНАМ', 'FOR FLORISTS, STUDIOS & SHOPS')}</span>
             <MotionText as="h2">{shop.t('Для', 'For')} <span className="script">{shop.t('бизнеса', 'business')}</span></MotionText>
-            <MotionText as="p">{shop.t('Оптовые цены, заказ коробками и ориентир AMS.', 'Wholesale pricing, by the box, AMS reference.')}</MotionText>
+            <MotionText as="p">{shop.t('Оптовые цены, заказ коробками.', 'Wholesale pricing, by the box.')}</MotionText>
             <span className="entry-action">{shop.t('Перейти в опт', 'Enter wholesale')}<ArrowUpRight size={25}/></span>
           </Link>
           <Link href="/b2c" className="entry-option" onClick={e=>enter(e,'b2c')}><span className="entry-frame" data-motion-frame="" aria-hidden="true"><i/><i/><i/><i/></span>

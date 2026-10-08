@@ -45,3 +45,13 @@ Commerce/auth DB tests create and clean their own fixtures. Run imported-catalog
 ## Deployment and recovery
 
 See [root stage deployment instructions](../DEPLOY.md). The runtime needs independent PostgreSQL, Redis, SMTP, Arcopay, FX and VV Admin credentials. `/health` is process liveness; `/health/ready` distinguishes configured services, and is not payment-settlement evidence.
+
+## VV Admin payment scenario
+
+Catalog offers no longer accept a fixed delivery date. The legacy non-null database column is retained for compatibility (new offers initialize it to their creation date); the admin API returns `delivery: null`. Checkout uses the customer's selected date, with a minimum of today plus two calendar days in `Europe/Moscow`, enforced for supplied dates by quote/order validation. The storefront preselects that minimum. Existing orders retain their original delivery data.
+
+`checkout_payment_reached` uses the normal durable checkout with a synthetic customer/order and real inventory reservation. It checks Arc Pay reconciliation and reads the hosted HTML page on `pay.arcpay.space`; it never submits a bank payment. This is an API scenario, not a browser rendering test.
+
+While the provider outcome is unresolved, the result is `healthy` with `cleanupStatus: retained` only if the hosted page is available. Later runs reuse the same order; they do not create another checkout or reservation. Admission is serialized inside the reservation transaction and does not hold a database transaction during provider I/O. Existing cancelled runs are replayable.
+
+Only authoritative provider failure/expiry/void restores stock through the existing reconciliation/webhook transaction. No local age timeout cancels an SBP session. A session without a terminal provider result can therefore retain its reservation indefinitely. Paid/review states or an unavailable hosted page report a failed scenario and require investigation; they must not be deleted or force-cancelled to make monitoring green. Synthetic orders do not enter VV Admin customer-order projections or paid-customer email delivery. Preserve scenario history and payment evidence.

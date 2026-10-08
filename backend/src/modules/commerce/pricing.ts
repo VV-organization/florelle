@@ -72,6 +72,11 @@ export function convertMinor(
     throw new AppError(400, "INVALID_PRICE", "Price overflow");
   return result;
 }
+export function minimumDeliveryDate(now = new Date()): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Moscow" })
+    .format(new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000));
+}
+
 export function validateDelivery(
   input: CheckoutInput,
   countries: DeliveryCountry[],
@@ -102,15 +107,12 @@ export function validateDelivery(
       !/^\d{4}-\d{2}-\d{2}$/.test(d.date) ||
       !Number.isFinite(day.getTime()) ||
       day.toISOString().slice(0, 10) !== d.date ||
-      d.date <
-        new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Moscow" }).format(
-          now,
-        )
+      d.date < minimumDeliveryDate(now)
     )
       throw new AppError(
         400,
         "INVALID_DELIVERY_DATE",
-        "Выберите будущую дату доставки",
+        "Выберите дату доставки не раньше чем через два дня",
       );
   }
   if (

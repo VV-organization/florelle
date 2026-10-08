@@ -16,7 +16,7 @@ export default function CollectionAtlas(){
  const s=useShop();const [active,setActive]=useState(0);const chosen=flowers[active];
  return <section className="collection-section section">
   <div className="section-heading"><MotionText as="h2">{s.t('Всё начинается','It all starts')}{' '}<span className="script">{s.t('с одного цветка','with one flower')}</span></MotionText><Link className="text-link" href="/catalog">{s.t('Найти свой','Find yours')}</Link></div>
-  <nav className="curated-collections" aria-label={s.t('Подборки цветов','Curated collections')}>{[['best-sellers','Бестселлеры','Bestsellers'],['premium-roses','Премиальные розы','Premium roses'],['spring-collection','Летняя коллекция','Summer collection']].map(([slug,ru,en])=><Link key={slug} href={'/catalog?collection='+slug}>{s.t(ru,en)}</Link>)}</nav><div className="collection-atlas">
+  <nav className="curated-collections" aria-label={s.t('Подборки цветов','Curated collections')}>{[['premium-roses','Премиальные розы','Premium roses'],['spring-collection','Летняя коллекция','Summer collection']].map(([slug,ru,en])=><Link key={slug} href={'/catalog?collection='+slug}>{s.t(ru,en)}</Link>)}</nav><div className="collection-atlas">
    <div className="atlas-art" aria-hidden="true">
     <div className="atlas-plane"/>
     <div className="atlas-outline"/>

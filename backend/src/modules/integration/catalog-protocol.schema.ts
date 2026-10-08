@@ -73,13 +73,6 @@ const availabilitySchema = z
   })
   .strict();
 
-const deliverySchema = z
-  .object({
-    kind: z.literal('date'),
-    value: z.string().date(),
-  })
-  .strict();
-
 const sellerAttributesSchema = z
   .object({
     country: z.string().trim().min(1).max(80),
@@ -96,9 +89,8 @@ export const offerCreateSchema = z
     availability: availabilitySchema,
     minimumQuantity: z.number().int().positive().nullable().optional(),
     packageQuantity: z.number().int().positive().nullable(),
-    delivery: deliverySchema,
     isActive: z.boolean(),
-    attributes: attributesSchema,
+    attributes: z.object({ retailPrice: z.string().optional() }).strict(),
   })
   .strict();
 

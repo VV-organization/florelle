@@ -85,7 +85,7 @@ export const integrationScenarioResultSchema = z.object({
   syntheticEntities: z.array(z.object({
     type: z.literal('order'),
     externalId: z.string().uuid(),
-    cleanupStatus: z.enum(['cancelled', 'failed']),
+    cleanupStatus: z.enum(['cancelled', 'failed', 'retained']),
   })),
   steps: z.null(),
   artifacts: z.null(),

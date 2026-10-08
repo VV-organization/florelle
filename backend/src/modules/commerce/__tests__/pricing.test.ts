@@ -13,3 +13,19 @@ describe('authoritative quote',()=>{
  it('keeps settlement and minimum independent of the display currency',()=>{const fx={...rates,TRY:31.127};const rub=calculateQuote([line],input,fx,countries,12,2.5);for(const currency of ['TRY','KZT']){const q=calculateQuote([line],{...input,displayCurrency:currency},fx,countries,12,2.5);expect(q.paymentAmountMinor).toBe(rub.paymentAmountMinor);expect(q.totalUsd).toBe(rub.totalUsd);}});
  it('validates country phone and requested date server-side',()=>{expect(()=>validateDelivery({...input,delivery:{...input.delivery,date:'2020-01-01'}},countries)).toThrow();expect(()=>validateDelivery({...input,shippingAddress:{...input.shippingAddress,contactPhone:'12345'}},countries)).toThrow();});
 });
+
+for (const [now, earliest] of [
+ ['2026-11-01T09:00:00Z','2026-11-03'],
+ ['2026-10-31T20:59:59Z','2026-11-02'],
+ ['2026-10-31T21:00:00Z','2026-11-03'],
+ ['2026-12-31T12:00:00Z','2027-01-02'],
+]) {
+ it(`allows delivery from ${earliest} at ${now}`,()=>{
+  const date = new Date(now);
+  for (const offset of [1,2]) {
+   const before=new Date(earliest+'T00:00:00Z');before.setUTCDate(before.getUTCDate()-offset);
+   expect(()=>validateDelivery({...input,delivery:{...input.delivery,date:before.toISOString().slice(0,10)}},countries,date)).toThrow();
+  }
+  expect(()=>validateDelivery({...input,delivery:{...input.delivery,date:earliest}},countries,date)).not.toThrow();
+ });
+}

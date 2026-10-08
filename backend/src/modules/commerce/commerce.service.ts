@@ -1,5 +1,6 @@
+import { syntheticNeedsResolution } from './synthetic-resolution';
 import { createHash, randomUUID } from "node:crypto";
-import { and, eq, sql, desc } from "drizzle-orm";
+import { and, eq, ne, sql, desc } from "drizzle-orm";
 import type { Database } from "../../shared/db/client";
 import type { FxService } from "../../shared/currency/fx.service";
 import { carts, cartItems } from "../../shared/db/schema/carts";
@@ -296,6 +297,13 @@ export class CommerceService {
     ]);
     const validatePaymentAmount = await this.arcPay?.prepareCheckout();
     const orderId = await this.db.transaction(async (tx) => {
+      if (syntheticRunId) {
+        await tx.execute(sql`select pg_advisory_xact_lock(hashtextextended('florelle-synthetic-checkout', 0))`);
+        const [unresolved] = await tx.select({ id: orders.id }).from(orders).where(and(
+          eq(orders.synthetic, true), syntheticNeedsResolution, ne(orders.scenarioRunId, syntheticRunId),
+        )).limit(1);
+        if (unresolved) throw new AppError(409, 'SYNTHETIC_PREVIOUS_ATTEMPT_UNRESOLVED', 'A previous synthetic payment is awaiting an authoritative provider result', { orderId: unresolved.id });
+      }
       await tx
         .select({ id: users.id })
         .from(users)

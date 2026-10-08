@@ -11,7 +11,7 @@ import {
 } from "vitest";
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
-import { eq, inArray } from "drizzle-orm";
+import { eq, inArray, sql } from "drizzle-orm";
 import type { Database } from "../../../shared/db/client";
 import type { FxService } from "../../../shared/currency/fx.service";
 import * as schema from "../../../shared/db/schema/index";
@@ -342,6 +342,80 @@ describeDatabase("Arc Pay durable checkout with PostgreSQL", () => {
     apiPayments = [p];
     return p;
   }
+  it("keeps synthetic stock reserved until authoritative expiry and restores it exactly once", async () => {
+    const userId = await addUser();
+    await fillCart(userId);
+    const adapter = new ScenarioCheckoutService(db, service, arc, async () => {});
+    expect(adapter.supportsDeferredCleanup).toBe(true);
+    const scenarioRunId = randomUUID();
+    const result = await adapter.createSyntheticCheckoutPaymentReached({ userId, scenarioRunId, request: input() });
+    const target = { orderId: result.order.id, scenarioRunId };
+    await expect(adapter.cancelSyntheticCheckoutPaymentReached(target)).rejects.toMatchObject({ code: 'SYNTHETIC_PAYMENT_UNRESOLVED' });
+    expect(await stock()).toBe(90);
+    await remote(result.order.id, 'timeout');
+    await expect(adapter.cancelSyntheticCheckoutPaymentReached(target)).rejects.toMatchObject({ code: 'SYNTHETIC_PAYMENT_UNRESOLVED' });
+    expect(await stock()).toBe(90);
+    await remote(result.order.id, 'expired');
+    await adapter.cancelSyntheticCheckoutPaymentReached(target);
+    await adapter.cancelSyntheticCheckoutPaymentReached(target);
+    expect(await stock()).toBe(100);
+    expect((await attempts(result.order.id)).state).toBe('failed');
+  });
+
+  it("blocks further synthetic orders after unexpected capture without releasing stock or sending customer mail", async () => {
+    const userId = await addUser();
+    await fillCart(userId);
+    const page = vi.fn(async () => {});
+    const adapter = new ScenarioCheckoutService(db, service, arc, page);
+    const scenarioRunId = randomUUID();
+    const result = await adapter.createSyntheticCheckoutPaymentReached({ userId, scenarioRunId, request: input() });
+    await remote(result.order.id);
+    await expect(adapter.cancelSyntheticCheckoutPaymentReached({ orderId: result.order.id, scenarioRunId })).rejects.toMatchObject({ code: 'SYNTHETIC_PAYMENT_REVIEW_REQUIRED' });
+    expect(page).not.toHaveBeenCalled();
+    expect(await stock()).toBe(90);
+    expect(await db.select().from(paymentEmails).where(eq(paymentEmails.orderId, result.order.id))).toHaveLength(0);
+    await fillCart(userId);
+    await expect(adapter.createSyntheticCheckoutPaymentReached({ userId, scenarioRunId: randomUUID(), request: input() })).rejects.toMatchObject({ code: 'SYNTHETIC_PREVIOUS_ATTEMPT_UNRESOLVED' });
+    expect(creates).toHaveLength(1);
+    expect(await stock()).toBe(90);
+  });
+
+  it("blocks a new scenario after a late capture of an authoritatively cancelled synthetic order", async () => {
+    const userId = await addUser();
+    await fillCart(userId);
+    const adapter = new ScenarioCheckoutService(db, service, arc, async () => {});
+    const scenarioRunId = randomUUID();
+    const result = await adapter.createSyntheticCheckoutPaymentReached({ userId, scenarioRunId, request: input() });
+    const target = { orderId: result.order.id, scenarioRunId };
+    await remote(result.order.id, 'expired');
+    await adapter.cancelSyntheticCheckoutPaymentReached(target);
+    await remote(result.order.id, 'captured');
+    await expect(adapter.cancelSyntheticCheckoutPaymentReached(target)).rejects.toMatchObject({ code: 'SYNTHETIC_PAYMENT_REVIEW_REQUIRED' });
+    expect((await attempts(result.order.id)).state).toBe('review');
+    await fillCart(userId);
+    await expect(adapter.createSyntheticCheckoutPaymentReached({ userId, scenarioRunId: randomUUID(), request: input() })).rejects.toMatchObject({ code: 'SYNTHETIC_PREVIOUS_ATTEMPT_UNRESOLVED' });
+    expect(creates).toHaveLength(1);
+  });
+
+  it("serializes synthetic reservation without holding an admission transaction during provider I/O", async () => {
+    const first = await addUser(), second = await addUser();
+    await fillCart(first); await fillCart(second);
+    let admissionFreeDuringProviderRequest = false;
+    onCreate = async () => {
+      await db.transaction(async tx => {
+        const result = await tx.execute<{ acquired: boolean }>(sql`select pg_try_advisory_xact_lock(hashtextextended('florelle-synthetic-checkout', 0)) as acquired`);
+        admissionFreeDuringProviderRequest = result[0]!.acquired;
+      });
+    };
+    const adapter = new ScenarioCheckoutService(db, service);
+    const results = await Promise.allSettled([first, second].map(userId => adapter.createSyntheticCheckoutPaymentReached({userId, scenarioRunId: randomUUID(), request: input()})));
+    expect(results.filter(r => r.status === 'fulfilled')).toHaveLength(1);
+    expect(results.find(r => r.status === 'rejected')).toMatchObject({reason: {code: 'SYNTHETIC_PREVIOUS_ATTEMPT_UNRESOLVED'}});
+    expect(creates).toHaveLength(1);
+    expect(await stock()).toBe(90);
+    expect(admissionFreeDuringProviderRequest).toBe(true);
+  });
+
   it("stores hosted session separately from payment identity and immutable request", async () => {
     const p = await place(),
       a = await attempts(p.order.id);

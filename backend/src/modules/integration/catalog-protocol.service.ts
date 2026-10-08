@@ -90,7 +90,6 @@ export const flowerPointCatalogCapability = (origin: string) =>
     media: {
       mode: 'url',
       maxBytes: 10 * 1024 * 1024,
-      upload:{url:`${origin}/admin/integration/media`,method:'POST',auth:'bearer',body:'raw'},
       mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
     },
   });
@@ -110,8 +109,6 @@ const flowerOfferAttributesSchema = {
   type: 'object',
   properties: {
     retailPrice: { type: 'string', title: 'Розничная цена RUB' },
-    referencePrice: { type: 'string', title: 'AMS цена RUB' },
-    amsPriceUsd: { type: 'string', title: 'AMS price USD (legacy)' },
   },
 } as const;
 
@@ -403,7 +400,8 @@ export class CatalogProtocolService {
           ...await this.offerPrices(tx,input,null),
           boxQuantity: input.packageQuantity ?? input.minimumQuantity ?? 1,
           availableStems: input.availability.quantity,
-          deliveryDate: input.delivery.value,
+          // Retain the legacy non-null column; offer dates no longer control delivery.
+          deliveryDate: new Date().toISOString().slice(0, 10),
           isActive: input.isActive,
         })
         .returning();
@@ -424,12 +422,11 @@ export class CatalogProtocolService {
         .set({
           ...(input.productId ? { productId: input.productId } : {}),
           ...(input.sellerId ? { sellerId: input.sellerId } : {}),
-          ...((input.price || input.attributes?.retailPrice!==undefined || input.attributes?.referencePrice!==undefined || input.attributes?.amsPriceUsd!==undefined)?await this.offerPrices(tx,input,current):{}),
+          ...((input.price || input.attributes?.retailPrice!==undefined)?await this.offerPrices(tx,input,current):{}),
           ...(input.packageQuantity !== undefined && input.packageQuantity !== null
             ? { boxQuantity: input.packageQuantity }
             : {}),
           ...(input.availability ? { availableStems: input.availability.quantity } : {}),
-          ...(input.delivery ? { deliveryDate: input.delivery.value } : {}),
           ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
           updatedAt: new Date(),
         })
@@ -731,9 +728,9 @@ function toOfferResource(row: typeof listings.$inferSelect) {
     availability: { quantity: row.availableStems, unit: 'stem' },
     minimumQuantity: null,
     packageQuantity: row.boxQuantity,
-    delivery: { kind: 'date' as const, value: row.deliveryDate },
+    delivery: null,
     isActive: row.isActive,
-    attributes: { retailPrice:row.retailPrice,referencePrice:row.referencePrice,amsPriceUsd: row.amsPriceUsd },
+    attributes: { retailPrice:row.retailPrice },
   };
 }
 
