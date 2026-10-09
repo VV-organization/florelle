@@ -72,15 +72,9 @@ export function convertMinor(
     throw new AppError(400, "INVALID_PRICE", "Price overflow");
   return result;
 }
-export function minimumDeliveryDate(now = new Date()): string {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Moscow" })
-    .format(new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000));
-}
-
 export function validateDelivery(
   input: CheckoutInput,
   countries: DeliveryCountry[],
-  now = new Date(),
 ) {
   const d = input.delivery,
     city = countries
@@ -101,29 +95,6 @@ export function validateDelivery(
         : /^[78]\d{10}$/;
   if (!pattern.test(digits))
     throw new AppError(400, "INVALID_PHONE", "Проверьте телефон получателя");
-  if (d.date) {
-    const day = new Date(d.date + "T00:00:00Z");
-    if (
-      !/^\d{4}-\d{2}-\d{2}$/.test(d.date) ||
-      !Number.isFinite(day.getTime()) ||
-      day.toISOString().slice(0, 10) !== d.date ||
-      d.date < minimumDeliveryDate(now)
-    )
-      throw new AppError(
-        400,
-        "INVALID_DELIVERY_DATE",
-        "Выберите дату доставки не раньше чем через два дня",
-      );
-  }
-  if (
-    d.window &&
-    !["09:00–13:00", "13:00–18:00", "18:00–21:00"].includes(d.window)
-  )
-    throw new AppError(
-      400,
-      "INVALID_DELIVERY_WINDOW",
-      "Выберите интервал доставки",
-    );
   if (!Number.isInteger(d.mode ?? 0) || (d.mode ?? 0) < 0 || (d.mode ?? 0) > (input.segment === "b2b" ? 0 : 1))
     throw new AppError(
       400,

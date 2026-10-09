@@ -19,8 +19,6 @@ export const checkoutSchema = z.object({
     countryCode: z.enum(["RU", "KZ", "TR"]),
     cityValue: z.string().min(1).max(100),
     mode: z.number().int().min(0).max(1).default(0),
-    date: z.string().date(),
-    window: z.enum(["09:00–13:00", "13:00–18:00", "18:00–21:00"]),
   }),
   notes: z.string().max(1000).optional(),
 });

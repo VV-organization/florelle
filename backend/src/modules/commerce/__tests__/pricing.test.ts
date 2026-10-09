@@ -20,24 +20,8 @@ describe('authoritative quote',()=>{
  it('keeps express delivery charge above free threshold',()=>{const q=calculateQuote([{...line,quantity:120}],{...input,delivery:{...input.delivery,mode:1}},rates,countries,12,2.5);expect(q.shipping).toBe('700.00');});
  it('rejects unconfigured rates instead of treating currencies as equal',()=>{expect(()=>calculateQuote([line],input,{...rates,RUB:0},countries,12,2.5)).toThrow(/rate/i);});
  it('keeps settlement and minimum independent of the display currency',()=>{const fx={...rates,TRY:31.127};const rub=calculateQuote([line],input,fx,countries,12,2.5);for(const currency of ['TRY','KZT']){const q=calculateQuote([line],{...input,displayCurrency:currency},fx,countries,12,2.5);expect(q.paymentAmountMinor).toBe(rub.paymentAmountMinor);expect(q.totalUsd).toBe(rub.totalUsd);}});
- it('validates country phone and requested date server-side',()=>{expect(()=>validateDelivery({...input,delivery:{...input.delivery,date:'2020-01-01'}},countries)).toThrow();expect(()=>validateDelivery({...input,shippingAddress:{...input.shippingAddress,contactPhone:'12345'}},countries)).toThrow();});
+ it('validates country phone server-side',()=>{expect(()=>validateDelivery({...input,shippingAddress:{...input.shippingAddress,contactPhone:'12345'}},countries)).toThrow();});
 });
-
-for (const [now, earliest] of [
- ['2026-11-01T09:00:00Z','2026-11-03'],
- ['2026-10-31T20:59:59Z','2026-11-02'],
- ['2026-10-31T21:00:00Z','2026-11-03'],
- ['2026-12-31T12:00:00Z','2027-01-02'],
-]) {
- it(`allows delivery from ${earliest} at ${now}`,()=>{
-  const date = new Date(now);
-  for (const offset of [1,2]) {
-   const before=new Date(earliest+'T00:00:00Z');before.setUTCDate(before.getUTCDate()-offset);
-   expect(()=>validateDelivery({...input,delivery:{...input.delivery,date:before.toISOString().slice(0,10)}},countries,date)).toThrow();
-  }
-  expect(()=>validateDelivery({...input,delivery:{...input.delivery,date:earliest}},countries,date)).not.toThrow();
- });
-}
 
 for(const segment of ['b2c','b2b'] as const){
  it(`rejects scheduled delivery for new ${segment} quotes`,()=>{

@@ -55,7 +55,7 @@ describeDatabase('CommerceService with real PostgreSQL', () => {
     segment,
     displayCurrency: 'RUB',
     shippingAddress: { address: 'Москва, Тестовая улица, 1', contactName: 'Получатель Тест', contactPhone: '+79991234567' },
-    delivery: { countryCode: 'RU', cityValue: 'Moscow', mode: 0, date: '2099-01-01', window: '13:00–18:00' },
+    delivery: { countryCode: 'RU', cityValue: 'Moscow', mode: 0 },
   });
 
   async function addUser(segment: 'b2b' | 'b2c' = 'b2c') {
@@ -123,6 +123,16 @@ describeDatabase('CommerceService with real PostgreSQL', () => {
     expect(await stock()).toBe(90);
     expect((await attempts(result.order.id)).amountMinor).toBe(495690);
     expect(provider.createPaymentOrder).toHaveBeenCalledWith(expect.objectContaining({ amountMinor: 495690 }));
+  });
+
+  it('does not persist a customer-supplied delivery schedule', async () => {
+    const userId = await addUser(); await fillCart(userId);
+    const request = input();
+    const result = await service.createOrder(userId, {...request, delivery: {...request.delivery!, date:'2020-01-01', window:'09:00–13:00'}}, randomUUID());
+    const saved = await service.getOrder(userId, result.order.id);
+    expect(saved.delivery).toEqual(request.delivery);
+    expect(saved.delivery).not.toHaveProperty('date');
+    expect(saved.delivery).not.toHaveProperty('window');
   });
 
   it('uses boxes for B2B prices, reserves stems and applies persisted delivery tariffs', async () => {

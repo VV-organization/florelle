@@ -340,7 +340,7 @@ export class CommerceService {
       const merchantOrderId = "FLR-" + randomUUID();
       const snapshot: OrderSnapshot = {
         ...quote,
-        delivery: input.delivery,
+        delivery: input.delivery ? {countryCode: input.delivery.countryCode, cityValue: input.delivery.cityValue, mode: input.delivery.mode ?? 0} : undefined,
         rates,
         items: quote.items.map((item, i) => ({
           ...item,
