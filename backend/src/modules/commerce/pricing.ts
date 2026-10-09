@@ -210,7 +210,7 @@ export function calculateQuote(
       rates,
     ),
     missingRub =
-      input.segment === "b2c" ? Math.max(0, 100000 - rubBeforeDelivery) : 0;
+      Math.max(0, 100000 - rubBeforeDelivery);
   return {
     subtotal: display(subtotalMinor),
     commission: display(commissionMinor),
