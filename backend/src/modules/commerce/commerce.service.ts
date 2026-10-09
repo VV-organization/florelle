@@ -477,7 +477,7 @@ export class CommerceService {
           merchantOrderId: claim.merchantOrderId,
           amountUsd: order.totalUsd,
           amountMinor: claim.amountMinor,
-          description: "Florelle order " + order.id,
+          description: "Bloom-send order " + order.id,
           callbackUrl: this.config.callbackUrl,
           successUrl: this.config.successUrl.replace("{orderId}", orderId),
           failUrl: this.config.failUrl.replace("{orderId}", orderId),
@@ -549,7 +549,7 @@ export class CommerceService {
     try {
       const result = await this.provider.getPaymentUrl({
         externalId: attempt.externalId,
-        description: "Florelle order " + orderId,
+        description: "Bloom-send order " + orderId,
       });
       const url = new URL(result.paymentUrl);
       if (url.protocol !== "https:" || url.username || url.password)

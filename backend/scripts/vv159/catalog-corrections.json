@@ -1,0 +1,661 @@
+[
+  {
+    "id": "cb770898-fa77-4a6a-9b67-2546ed853419",
+    "slug": "madonna-light-pink-29184",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "White Naomi!",
+      "description": {
+        "ru": "White Naomi! — роза. Цветовая гамма — светло-розовая. Можно выбрать для свадебного оформления и романтичных букетов.",
+        "en": "White Naomi! — rose. Colour palette: pale pink. A choice for wedding arrangements and romantic bouquets."
+      },
+      "image_url": "/media/d7958187852323c27a806393cfaaf68cd91378bc7c20591fa7aa0837dd9682cc.webp",
+      "color": "light-pink",
+      "category_id": "388c1943-4e2b-4dd3-b227-6d3b334b54ef"
+    },
+    "after": {
+      "name": {
+        "ru": "Роза светло-розовая",
+        "en": "Pale pink rose"
+      },
+      "description": {
+        "ru": "Роза светло-розовая — роза. Цветовая гамма — светло-розовая. Можно выбрать для свадебного оформления и романтичных букетов.",
+        "en": "Pale pink rose — rose. Colour palette: pale pink. A choice for wedding arrangements and romantic bouquets."
+      }
+    }
+  },
+  {
+    "id": "25d22643-f9bc-40de-8369-1fff1a96f600",
+    "slug": "amazing-magic-light-pink-31613",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "High & Yellow Magic",
+      "description": {
+        "ru": "High & Yellow Magic — кустовая пионовидная роза. Цветовая гамма — персиково-розовая. Можно выбрать для свадебного оформления и романтичных букетов.",
+        "en": "High & Yellow Magic — garden spray rose. Colour palette: peach pink. A choice for wedding arrangements and romantic bouquets."
+      },
+      "image_url": "/media/6252a8ad57848b1f2a62efc0f92fcac8cd58d0496bbd2ff97e7b5625c15f6306.webp",
+      "color": "peach",
+      "category_id": "714085ed-add1-4259-abf7-a9756bbeccac"
+    },
+    "after": {
+      "name": {
+        "ru": "Кустовая пионовидная роза персиковая",
+        "en": "Peach garden spray rose"
+      },
+      "description": {
+        "ru": "Кустовая пионовидная роза персиковая — кустовая пионовидная роза. Цветовая гамма — персиково-розовая. Можно выбрать для свадебного оформления и романтичных букетов.",
+        "en": "Peach garden spray rose — garden spray rose. Colour palette: peach pink. A choice for wedding arrangements and romantic bouquets."
+      }
+    }
+  },
+  {
+    "id": "00c5f2ff-bf5e-4d50-be08-dcc6bb0120a8",
+    "slug": "fortune-red-4293",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Gold Strike",
+      "description": {
+        "ru": "Gold Strike — роза. Цветовая гамма — красная. Можно выбрать для романтичных букетов.",
+        "en": "Gold Strike — rose. Colour palette: red. A choice for romantic bouquets."
+      },
+      "image_url": "/media/11577ef87e319a398aaca9ce837dfedb640e6dbc117f829bb18a7c94c7cc9658.webp",
+      "color": "red",
+      "category_id": "388c1943-4e2b-4dd3-b227-6d3b334b54ef"
+    },
+    "after": {
+      "name": {
+        "ru": "Роза красная",
+        "en": "Red rose"
+      },
+      "description": {
+        "ru": "Роза красная — роза. Цветовая гамма — красная. Можно выбрать для романтичных букетов.",
+        "en": "Red rose — rose. Colour palette: red. A choice for romantic bouquets."
+      }
+    }
+  },
+  {
+    "id": "79112ed1-71fd-4eab-bdc5-686d9973b213",
+    "slug": "yoga-trendsetter-yellow-26983",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Peach Trendsetter",
+      "description": {
+        "ru": "Peach Trendsetter — кустовая пионовидная роза. Цветовая гамма — жёлтая. У сорта садовая форма раскрытия и несколько бутонов на ветвистом стебле. Можно выбрать для летних композиций и оформления витрины.",
+        "en": "Peach Trendsetter — garden spray rose. Colour palette: yellow. Features garden-style opening and several buds on a branching stem. A choice for summer arrangements and shop displays."
+      },
+      "image_url": "/media/b8cf61f46b782d6c20bf005b679601ce765eb993347ccc0b29fa3bcc6446529b.webp",
+      "color": "yellow",
+      "category_id": "714085ed-add1-4259-abf7-a9756bbeccac"
+    },
+    "after": {
+      "name": {
+        "ru": "Кустовая пионовидная роза жёлтая",
+        "en": "Yellow garden spray rose"
+      },
+      "description": {
+        "ru": "Кустовая пионовидная роза жёлтая — кустовая пионовидная роза. Цветовая гамма — жёлтая. У сорта садовая форма раскрытия и несколько бутонов на ветвистом стебле. Можно выбрать для летних композиций и оформления витрины.",
+        "en": "Yellow garden spray rose — garden spray rose. Colour palette: yellow. Features garden-style opening and several buds on a branching stem. A choice for summer arrangements and shop displays."
+      }
+    }
+  },
+  {
+    "id": "718614f3-60af-4f01-8c67-a61c2810b129",
+    "slug": "jet-set-pink-132",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "White Naomi!",
+      "description": {
+        "ru": "White Naomi! — роза. Цветовая гамма — розовая. Можно выбрать для свадебного оформления и монобукетов.",
+        "en": "White Naomi! — rose. Colour palette: pink. A choice for wedding arrangements and single-variety bouquets."
+      },
+      "image_url": "/media/9c7c4f4c3b6f9fbeee5a006187232211fdb01cfceb0a5af561d4e844919eb6dd.webp",
+      "color": "pink",
+      "category_id": "388c1943-4e2b-4dd3-b227-6d3b334b54ef"
+    },
+    "after": {
+      "name": {
+        "ru": "Роза розовая",
+        "en": "Pink rose"
+      },
+      "description": {
+        "ru": "Роза розовая — роза. Цветовая гамма — розовая. Можно выбрать для свадебного оформления и монобукетов.",
+        "en": "Pink rose — rose. Colour palette: pink. A choice for wedding arrangements and single-variety bouquets."
+      }
+    }
+  },
+  {
+    "id": "9869f0bf-02ff-4c35-946d-26948dca838a",
+    "slug": "holly-peach-30782",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "White Naomi!",
+      "description": {
+        "ru": "White Naomi! — кустовая пионовидная роза. Цветовая гамма — персиковая. У сорта садовая форма раскрытия и несколько бутонов на ветвистом стебле. Можно выбрать для свадебного оформления и летних композиций.",
+        "en": "White Naomi! — garden spray rose. Colour palette: peach. Features garden-style opening and several buds on a branching stem. A choice for wedding arrangements and summer arrangements."
+      },
+      "image_url": "/media/e4ca3d950992026331383c77ad7cef9421b5d5a702febcbea6f75068d987907a.webp",
+      "color": "peach",
+      "category_id": "714085ed-add1-4259-abf7-a9756bbeccac"
+    },
+    "after": {
+      "name": {
+        "ru": "Кустовая пионовидная роза персиковая",
+        "en": "Peach garden spray rose"
+      },
+      "description": {
+        "ru": "Кустовая пионовидная роза персиковая — кустовая пионовидная роза. Цветовая гамма — персиковая. У сорта садовая форма раскрытия и несколько бутонов на ветвистом стебле. Можно выбрать для свадебного оформления и летних композиций.",
+        "en": "Peach garden spray rose — garden spray rose. Colour palette: peach. Features garden-style opening and several buds on a branching stem. A choice for wedding arrangements and summer arrangements."
+      }
+    }
+  },
+  {
+    "id": "64a8f071-a3ff-4eb2-afe2-8a565127921b",
+    "slug": "mix-moon-purple-30712",
+    "reason": "Категория противоречит изображённому растению; название приведено к изображению.",
+    "before": {
+      "displayName": "Mix moon",
+      "description": {
+        "ru": "Mix moon. Цветовая гамма — кремово-жёлтая.",
+        "en": "Mix moon. Colour palette: cream yellow."
+      },
+      "image_url": "/media/5a6c9352460835e83ce5e981f0a6a2c67ab19345f596ee1abbec5b92a452f278.webp",
+      "color": "cream",
+      "category_id": "a645fcd4-560a-431b-9a5b-b84b7b7cb06d",
+      "species": "Mini Carnation"
+    },
+    "after": {
+      "name": {
+        "ru": "Хризантема кремовая",
+        "en": "Cream chrysanthemum"
+      },
+      "description": {
+        "ru": "Хризантема кремовая — кремово-жёлтая.",
+        "en": "Cream chrysanthemum. Colour palette: cream yellow."
+      },
+      "category_id": "8c21ed32-e4dc-4128-9440-556bb5692d9d",
+      "species": "Chr t"
+    }
+  },
+  {
+    "id": "0241d568-cf90-4458-a92a-a822aee439f7",
+    "slug": "blue-jumbo-blue-26681",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Blue jumbo",
+      "description": {
+        "ru": "BLUE JUMBO — гортензия. Цветовая гамма — смесь белых, голубых и розовых цветов. Можно выбрать для интерьерных композиций.",
+        "en": "BLUE JUMBO — hydrangea. Colour palette: a mix of white, light blue and pink flowers. A choice for interior arrangements."
+      },
+      "image_url": "/media/959a3e7ffda5a4d821028eef5a67068715578ff5352e5a38e3533b177e287d96.png",
+      "color": "multicolor",
+      "category_id": "5ee3e48a-0558-46b6-8cb7-8182fafdffc8"
+    },
+    "after": {
+      "name": {
+        "ru": "Гортензия микс",
+        "en": "Hydrangea mix"
+      },
+      "description": {
+        "ru": "Гортензия микс — гортензия. Цветовая гамма — смесь белых, голубых и розовых цветов. Можно выбрать для интерьерных композиций.",
+        "en": "Hydrangea mix — hydrangea. Colour palette: a mix of white, light blue and pink flowers. A choice for interior arrangements."
+      }
+    }
+  },
+  {
+    "id": "90fe8637-6507-4606-9eb7-74e81b7d32b9",
+    "slug": "yellow-yellow-27983",
+    "reason": "Категория противоречит изображённому растению; название приведено к изображению.",
+    "before": {
+      "displayName": "Yellow",
+      "description": {
+        "ru": "Yellow. Цветовая гамма — сиренево-лавандовая.",
+        "en": "Yellow. Colour palette: lavender lilac."
+      },
+      "image_url": "/media/84363643cfdb329fed35b94a0403d7354ed77ed3b8e364ffd78379a0fa17cfce.webp",
+      "color": "lilac-lavander",
+      "category_id": "b1d57b8d-7d58-4061-b06e-246b345c34ff",
+      "species": "Spray Carnation"
+    },
+    "after": {
+      "name": {
+        "ru": "Эустома сиреневая",
+        "en": "Lilac eustoma"
+      },
+      "description": {
+        "ru": "Эустома сиреневая — сиренево-лавандовая.",
+        "en": "Lilac eustoma. Colour palette: lavender lilac."
+      },
+      "category_id": "3683825c-8124-4306-93c4-699af22f8861",
+      "species": "Eustoma"
+    }
+  },
+  {
+    "id": "b6ad4e79-6d84-4b8c-9f06-77c8e7785098",
+    "slug": "moon-walk-5-multicolor-34108",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Yelloween 5+",
+      "description": {
+        "ru": "Yelloween 5+ — роза. Цветовая гамма — розово-сиреневая. Можно выбрать для монобукетов и праздничного оформления.",
+        "en": "Yelloween 5+ — rose. Colour palette: pink lilac. A choice for single-variety bouquets and celebration flowers."
+      },
+      "image_url": "/media/c31bcc8ed72ec0dfa7c3c14c4ec6a404d6e66a2cfbe41d945707c31271c54537.webp",
+      "color": "lilac-lavander",
+      "category_id": "388c1943-4e2b-4dd3-b227-6d3b334b54ef"
+    },
+    "after": {
+      "name": {
+        "ru": "Роза розово-сиреневая",
+        "en": "Pink lilac rose"
+      },
+      "description": {
+        "ru": "Роза розово-сиреневая — роза. Цветовая гамма — розово-сиреневая. Можно выбрать для монобукетов и праздничного оформления.",
+        "en": "Pink lilac rose — rose. Colour palette: pink lilac. A choice for single-variety bouquets and celebration flowers."
+      }
+    }
+  },
+  {
+    "id": "19a0f7a3-5044-42f8-ab6b-bf90e2daf786",
+    "slug": "large-multicolor-33441",
+    "reason": "Категория противоречит изображённому растению; название приведено к изображению.",
+    "before": {
+      "displayName": "Large",
+      "description": {
+        "ru": "Large. Цветовая гамма — розовая.",
+        "en": "Large. Colour palette: pink."
+      },
+      "image_url": "/media/2c75521982b9ca00ba323b6313de3b2a20dbe35d3f988609436a28dc0cf553e2.webp",
+      "color": "pink",
+      "category_id": "e8aa427a-358c-4731-998b-776adcbfe1af",
+      "species": "Sunflower"
+    },
+    "after": {
+      "name": {
+        "ru": "Роза розовая",
+        "en": "Pink rose"
+      },
+      "description": {
+        "ru": "Роза розовая — розовая.",
+        "en": "Pink rose. Colour palette: pink."
+      },
+      "category_id": "388c1943-4e2b-4dd3-b227-6d3b334b54ef",
+      "species": "Rose"
+    }
+  },
+  {
+    "id": "331ffcaa-8091-43c8-9325-44a18986521a",
+    "slug": "mix-white-pink-multicolor-33476",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Mix  white+pink",
+      "description": {
+        "ru": "Mix  white+pink — альстромерия. Цветовая гамма — разноцветная смесь. Можно выбрать для свадебного оформления и романтичных букетов.",
+        "en": "Mix  white+pink — alstroemeria. Colour palette: mixed colours. A choice for wedding arrangements and romantic bouquets."
+      },
+      "image_url": "/media/fb42e73ca844ed97b5feccacfd7848430eb7ed46b0eecc5fc13c2305ca5ff64f.webp",
+      "color": "multicolor",
+      "category_id": "bdac5416-b825-4e52-85fd-31a72d1359af"
+    },
+    "after": {
+      "name": {
+        "ru": "Альстромерия микс",
+        "en": "Alstroemeria mix"
+      },
+      "description": {
+        "ru": "Альстромерия микс — альстромерия. Цветовая гамма — разноцветная смесь. Можно выбрать для свадебного оформления и романтичных букетов.",
+        "en": "Alstroemeria mix — alstroemeria. Colour palette: mixed colours. A choice for wedding arrangements and romantic bouquets."
+      }
+    }
+  },
+  {
+    "id": "572cc143-6529-4f1e-8593-2e2266609a74",
+    "slug": "lisanne-lavendel-lilac-lavander-30154",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Santini Doria Pink",
+      "description": {
+        "ru": "Santini Doria Pink — эустома. Цветовая гамма — сиренево-лавандовая. У сорта волнистые края лепестков. Можно выбрать для романтичных букетов.",
+        "en": "Santini Doria Pink — eustoma. Colour palette: lavender lilac. Features ruffled petal edges. A choice for romantic bouquets."
+      },
+      "image_url": "/media/059a5847ed542ce6a0ea3cb69c1d2d232d03ac2a2d5d5ad871220f90aec9ef60.webp",
+      "color": "lilac-lavander",
+      "category_id": "3683825c-8124-4306-93c4-699af22f8861"
+    },
+    "after": {
+      "name": {
+        "ru": "Эустома сиреневая",
+        "en": "Lilac eustoma"
+      },
+      "description": {
+        "ru": "Эустома сиреневая — эустома. Цветовая гамма — сиренево-лавандовая. У сорта волнистые края лепестков. Можно выбрать для романтичных букетов.",
+        "en": "Lilac eustoma — eustoma. Colour palette: lavender lilac. Features ruffled petal edges. A choice for romantic bouquets."
+      }
+    }
+  },
+  {
+    "id": "396fec24-372c-4ea3-8916-314cb435da72",
+    "slug": "baltica-light-white-31375",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Zembla Lime",
+      "description": {
+        "ru": "Zembla Lime — хризантема одноголовая. Цветовая гамма — белая. Можно выбрать для свадебного оформления.",
+        "en": "Zembla Lime — chr t. Colour palette: white. A choice for wedding arrangements."
+      },
+      "image_url": "/media/a6217321b6fd2ab94ec103bb281fc529d3323907124b0303830f2f73ec979cb8.webp",
+      "color": "white",
+      "category_id": "8c21ed32-e4dc-4128-9440-556bb5692d9d"
+    },
+    "after": {
+      "name": {
+        "ru": "Хризантема белая",
+        "en": "White chrysanthemum"
+      },
+      "description": {
+        "ru": "Хризантема белая — хризантема одноголовая. Цветовая гамма — белая. Можно выбрать для свадебного оформления.",
+        "en": "White chrysanthemum — chr t. Colour palette: white. A choice for wedding arrangements."
+      }
+    }
+  },
+  {
+    "id": "3aa03353-f034-4c12-90db-c43cc891de00",
+    "slug": "bon-dia-dark-pink-28145",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Peach Avalanche+",
+      "description": {
+        "ru": "Peach Avalanche+ — гербера крупная. Цветовая гамма — насыщенная розовая. Можно выбрать для подарочных букетов и оформления витрины.",
+        "en": "Peach Avalanche+ — ge gr. Colour palette: deep pink. A choice for gift bouquets and shop displays."
+      },
+      "image_url": "/media/fd11b889cf1faebd875cd944d4042e1f9bb34c81642dadeafd5c3dec7ccf7239.webp",
+      "color": "dark-pink",
+      "category_id": "a28bbf10-5c8d-4370-8f42-8e2f013c7199"
+    },
+    "after": {
+      "name": {
+        "ru": "Гербера ярко-розовая",
+        "en": "Deep pink gerbera"
+      },
+      "description": {
+        "ru": "Гербера ярко-розовая — гербера крупная. Цветовая гамма — насыщенная розовая. Можно выбрать для подарочных букетов и оформления витрины.",
+        "en": "Deep pink gerbera — ge gr. Colour palette: deep pink. A choice for gift bouquets and shop displays."
+      }
+    }
+  },
+  {
+    "id": "e8fa6b15-1d60-4780-8820-f3a5eb1bb782",
+    "slug": "full-moon-yellow-28155",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Ping Pong White",
+      "description": {
+        "ru": "Ping Pong White — гербера крупная. Цветовая гамма — жёлтая. Можно выбрать для летних композиций и оформления витрины.",
+        "en": "Ping Pong White — ge gr. Colour palette: yellow. A choice for summer arrangements and shop displays."
+      },
+      "image_url": "/media/1702b5d6b8c3025d4bcb0542ba7d13678511d35cc21c99a41fb7f3816e9aa2d3.webp",
+      "color": "yellow",
+      "category_id": "a28bbf10-5c8d-4370-8f42-8e2f013c7199"
+    },
+    "after": {
+      "name": {
+        "ru": "Гербера жёлтая",
+        "en": "Yellow gerbera"
+      },
+      "description": {
+        "ru": "Гербера жёлтая — гербера крупная. Цветовая гамма — жёлтая. Можно выбрать для летних композиций и оформления витрины.",
+        "en": "Yellow gerbera — ge gr. Colour palette: yellow. A choice for summer arrangements and shop displays."
+      }
+    }
+  },
+  {
+    "id": "3fb45621-e510-48d4-8c53-2009ed9dc9ee",
+    "slug": "jetset-peach-28156",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "White Naomi!",
+      "description": {
+        "ru": "White Naomi! — гербера крупная. Цветовая гамма — оранжево-персиковая. Можно выбрать для летних композиций.",
+        "en": "White Naomi! — ge gr. Colour palette: orange peach. A choice for summer arrangements."
+      },
+      "image_url": "/media/d6d6b737014ed79080a8c5a518bf48345709449eb3380e12976a44263298730f.webp",
+      "color": "peach",
+      "category_id": "a28bbf10-5c8d-4370-8f42-8e2f013c7199"
+    },
+    "after": {
+      "name": {
+        "ru": "Гербера персиковая",
+        "en": "Peach gerbera"
+      },
+      "description": {
+        "ru": "Гербера персиковая — гербера крупная. Цветовая гамма — оранжево-персиковая. Можно выбрать для летних композиций.",
+        "en": "Peach gerbera — ge gr. Colour palette: orange peach. A choice for summer arrangements."
+      }
+    }
+  },
+  {
+    "id": "5463f8ec-5b76-4b87-a0c2-abb2c07577c4",
+    "slug": "applause-orange-31082",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Deep Purple",
+      "description": {
+        "ru": "Deep Purple — гербера крупная. Цветовая гамма — оранжевая. Можно выбрать для праздничного оформления.",
+        "en": "Deep Purple — ge gr. Colour palette: orange. A choice for celebration flowers."
+      },
+      "image_url": "/media/805a68d7938478a04219c5d45ff87806f0481f3cde9443be3e4176d1598a55f6.webp",
+      "color": "orange",
+      "category_id": "a28bbf10-5c8d-4370-8f42-8e2f013c7199"
+    },
+    "after": {
+      "name": {
+        "ru": "Гербера оранжевая",
+        "en": "Orange gerbera"
+      },
+      "description": {
+        "ru": "Гербера оранжевая — гербера крупная. Цветовая гамма — оранжевая. Можно выбрать для праздничного оформления.",
+        "en": "Orange gerbera — ge gr. Colour palette: orange. A choice for celebration flowers."
+      }
+    }
+  },
+  {
+    "id": "3d630441-4f8f-4a69-9fe5-769e809856c4",
+    "slug": "braemar-pink-32929",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Anastasia Green",
+      "description": {
+        "ru": "Anastasia Green — цимбидиум. Цветовая гамма — розовая. Можно выбрать для свадебного оформления и романтичных букетов.",
+        "en": "Anastasia Green — cymb. Colour palette: pink. A choice for wedding arrangements and romantic bouquets."
+      },
+      "image_url": "/media/18752f3da08a6e30f01bd5f0661e838f44a509db8f7a1a165f037ccb4c84a361.webp",
+      "color": "pink",
+      "category_id": "f2e92f8e-acc7-4079-a5bc-df978351a038"
+    },
+    "after": {
+      "name": {
+        "ru": "Цимбидиум розовый",
+        "en": "Pink cymbidium"
+      },
+      "description": {
+        "ru": "Цимбидиум розовый — цимбидиум. Цветовая гамма — розовая. Можно выбрать для свадебного оформления и романтичных букетов.",
+        "en": "Pink cymbidium — cymb. Colour palette: pink. A choice for wedding arrangements and romantic bouquets."
+      }
+    }
+  },
+  {
+    "id": "a94eabfc-1ef0-4026-bc3e-63844ce3048e",
+    "slug": "valentine-multicolor-27941",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Red Naomi!",
+      "description": {
+        "ru": "Red Naomi! — ирис. Цветовая гамма — сине-фиолетовая. Можно выбрать для контрастных сочетаний.",
+        "en": "Red Naomi! — iris. Colour palette: blue violet. A choice for contrasting combinations."
+      },
+      "image_url": "/media/90649e36fd0ebc2fc36f7b079ab0ff43c87c3b6b45a5cdbf4bc3f821a810a678.webp",
+      "color": "purple",
+      "category_id": "2635371b-1136-45d8-82e3-a048a4d7fbd1"
+    },
+    "after": {
+      "name": {
+        "ru": "Ирис сине-фиолетовый",
+        "en": "Blue violet iris"
+      },
+      "description": {
+        "ru": "Ирис сине-фиолетовый — ирис. Цветовая гамма — сине-фиолетовая. Можно выбрать для контрастных сочетаний.",
+        "en": "Blue violet iris — iris. Colour palette: blue violet. A choice for contrasting combinations."
+      }
+    }
+  },
+  {
+    "id": "3316efa4-8976-4255-907d-cecb24ec2901",
+    "slug": "bowie-white-30919",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Willem Orange",
+      "description": {
+        "ru": "Willem Orange — хризантема сантини. Цветовая гамма — белая. Можно выбрать для свадебного оформления.",
+        "en": "Willem Orange — chr san. Colour palette: white. A choice for wedding arrangements."
+      },
+      "image_url": "/media/509fcf72e9fbe83784d85f95afe6050f39a0bbbb24ee791c241ef8f1aa9a1575.webp",
+      "color": "white",
+      "category_id": "89d45dab-b28b-4ab4-8e41-f56b43e94bde"
+    },
+    "after": {
+      "name": {
+        "ru": "Хризантема сантини белая",
+        "en": "White santini chrysanthemum"
+      },
+      "description": {
+        "ru": "Хризантема сантини белая — хризантема сантини. Цветовая гамма — белая. Можно выбрать для свадебного оформления.",
+        "en": "White santini chrysanthemum — chr san. Colour palette: white. A choice for wedding arrangements."
+      }
+    }
+  },
+  {
+    "id": "4dbf5042-61f5-4df7-9ba4-69970e6bdedb",
+    "slug": "sun-up-white-232",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Sunrich Orange",
+      "description": {
+        "ru": "Sunrich Orange — хризантема сантини. Цветовая гамма — белая и жёлтая. Можно выбрать для свадебного оформления.",
+        "en": "Sunrich Orange — chr san. Colour palette: bicoloured white and yellow. A choice for wedding arrangements."
+      },
+      "image_url": "/media/5379fa886dc4f931c77f58bea572670c479d0cadddd4f2dcf7323ad2194910a4.webp",
+      "color": "multicolor",
+      "category_id": "89d45dab-b28b-4ab4-8e41-f56b43e94bde"
+    },
+    "after": {
+      "name": {
+        "ru": "Хризантема сантини бело-жёлтая",
+        "en": "White yellow santini chrysanthemum"
+      },
+      "description": {
+        "ru": "Хризантема сантини бело-жёлтая — хризантема сантини. Цветовая гамма — белая и жёлтая. Можно выбрать для свадебного оформления.",
+        "en": "White yellow santini chrysanthemum — chr san. Colour palette: bicoloured white and yellow. A choice for wedding arrangements."
+      }
+    }
+  },
+  {
+    "id": "6f2dd5a9-41bf-44cd-8cdc-759839a21f66",
+    "slug": "babe-light-pink-28663",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Orange Babe",
+      "description": {
+        "ru": "Orange Babe — хризантема одноголовая. Цветовая гамма — светло-розовая. Можно выбрать для романтичных букетов и подарочных букетов.",
+        "en": "Orange Babe — chr t. Colour palette: pale pink. A choice for romantic bouquets and gift bouquets."
+      },
+      "image_url": "/media/b109185bd57baf98c452eae9ddf6ef2d70206e6f812205363967d4b6ae5ced82.webp",
+      "color": "light-pink",
+      "category_id": "8c21ed32-e4dc-4128-9440-556bb5692d9d"
+    },
+    "after": {
+      "name": {
+        "ru": "Хризантема светло-розовая",
+        "en": "Pale pink chrysanthemum"
+      },
+      "description": {
+        "ru": "Хризантема светло-розовая — хризантема одноголовая. Цветовая гамма — светло-розовая. Можно выбрать для романтичных букетов и подарочных букетов.",
+        "en": "Pale pink chrysanthemum — chr t. Colour palette: pale pink. A choice for romantic bouquets and gift bouquets."
+      }
+    }
+  },
+  {
+    "id": "fd64b23d-bd28-4a75-bfea-5fda81d27c7d",
+    "slug": "mirana-white-32071",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Pink Athena",
+      "description": {
+        "ru": "Pink Athena — хризантема одноголовая. Цветовая гамма — белая. Можно выбрать для свадебного оформления.",
+        "en": "Pink Athena — chr t. Colour palette: white. A choice for wedding arrangements."
+      },
+      "image_url": "/media/571459a867b702f00962d2eb3b8ee23fb2e3471460815e34547da3d3c62ec41e.webp",
+      "color": "white",
+      "category_id": "8c21ed32-e4dc-4128-9440-556bb5692d9d"
+    },
+    "after": {
+      "name": {
+        "ru": "Хризантема белая",
+        "en": "White chrysanthemum"
+      },
+      "description": {
+        "ru": "Хризантема белая — хризантема одноголовая. Цветовая гамма — белая. Можно выбрать для свадебного оформления.",
+        "en": "White chrysanthemum — chr t. Colour palette: white. A choice for wedding arrangements."
+      }
+    }
+  },
+  {
+    "id": "f428d2c2-baa0-418c-8e8b-c40f9e27ddc8",
+    "slug": "sugarbunny-purple-34008",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "White Majolica",
+      "description": {
+        "ru": "White Majolica — хризантема одноголовая. Цветовая гамма — сиренево-фиолетовая. Можно выбрать для подарочных букетов.",
+        "en": "White Majolica — chr t. Colour palette: lilac purple. A choice for gift bouquets."
+      },
+      "image_url": "/media/651d235c2e2b72adf2998ed27c8672d144be6afcd6e8e3cca75d55ad2cf8960d.webp",
+      "color": "purple",
+      "category_id": "8c21ed32-e4dc-4128-9440-556bb5692d9d"
+    },
+    "after": {
+      "name": {
+        "ru": "Хризантема сиренево-фиолетовая",
+        "en": "Lilac purple chrysanthemum"
+      },
+      "description": {
+        "ru": "Хризантема сиренево-фиолетовая — хризантема одноголовая. Цветовая гамма — сиренево-фиолетовая. Можно выбрать для подарочных букетов.",
+        "en": "Lilac purple chrysanthemum — chr t. Colour palette: lilac purple. A choice for gift bouquets."
+      }
+    }
+  },
+  {
+    "id": "670e513b-9abe-40b2-b2f2-867121d8d90b",
+    "slug": "blue-multicolor-4917",
+    "reason": "Название противоречит цвету на фотографии и в описании.",
+    "before": {
+      "displayName": "Blue",
+      "description": {
+        "ru": "Blue — роза. Цветовая гамма — белая. Можно выбрать для подарочных букетов и оформления витрины.",
+        "en": "Blue — rose. Colour palette: white. A choice for gift bouquets and shop displays."
+      },
+      "image_url": "/media/fffeef0ae1b370b135a4b2402e1b96565efd4fb1c81bdbc9d29f8252575b3db8.webp",
+      "color": "white",
+      "category_id": "388c1943-4e2b-4dd3-b227-6d3b334b54ef"
+    },
+    "after": {
+      "name": {
+        "ru": "Роза белая",
+        "en": "White rose"
+      },
+      "description": {
+        "ru": "Роза белая — роза. Цветовая гамма — белая. Можно выбрать для подарочных букетов и оформления витрины.",
+        "en": "White rose — rose. Colour palette: white. A choice for gift bouquets and shop displays."
+      }
+    }
+  }
+]

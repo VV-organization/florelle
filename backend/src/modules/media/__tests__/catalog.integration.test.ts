@@ -52,8 +52,8 @@ describe.skipIf(!process.env.RUN_DATABASE_TESTS)('Florelle imported database and
   const prices=await catalog.getListings(productsQuerySchema.parse({segment:'b2c',min_price:100,max_price:110,sort:'price_asc'}));
   expect(prices.items.length).toBeGreaterThan(0);expect(prices.items.every(i=>Number(i.seller_price)>=100&&Number(i.seller_price)<=110)).toBe(true);
  });
- it('matches original color-group priority including missing source colors',async()=>{
-  const group=(item:any)=>{const c=(item.color||item.product.slug).toLowerCase();if(/pink|peach|salmon/.test(c))return 'pink';if(/white|cream/.test(c))return 'white';if(/yellow/.test(c))return 'yellow';if(/orange/.test(c))return 'orange';if(/red|burgundy/.test(c))return 'red';if(/lilac|purple|lavand/.test(c))return 'purple';if(/green/.test(c))return 'green';return 'mixed';};
+ it('keeps color-group priority and includes only explicitly mixed colors',async()=>{
+  const group=(item:any)=>{const c=(item.color||item.product.slug).toLowerCase();if(/pink|peach|salmon/.test(c))return 'pink';if(/white|cream/.test(c))return 'white';if(/yellow/.test(c))return 'yellow';if(/orange/.test(c))return 'orange';if(/red|burgundy/.test(c))return 'red';if(/lilac|purple|lavand/.test(c))return 'purple';if(/green/.test(c))return 'green';if(/(^|[^a-z])(multicolor|mixed)([^a-z]|$)/.test((item.color||'').toLowerCase()))return 'mixed';return '';};
   const result=await catalog.getListings(productsQuerySchema.parse({colors:'pink,mixed'}));
   expect(result.total).toBe(source.items.filter((i:any)=>['pink','mixed'].includes(group(i))).length);
  });

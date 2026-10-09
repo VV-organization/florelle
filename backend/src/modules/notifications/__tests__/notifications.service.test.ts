@@ -13,20 +13,20 @@ describe('NotificationsService', () => {
       expiresAt: new Date('2026-08-21T15:00:45.112Z'),
     });
 
-    expect(message.subject).toBe('Код подтверждения регистрации — Florelle');
+    expect(message.subject).toBe('Код подтверждения регистрации — Bloom-send');
     expect(message.text).toContain('Код подтверждения: 123<56');
     expect(message.text).toContain('Код действителен до 21.08.2026, 18:00 МСК.');
     expect(message.text).not.toContain('2026-08-21T15:00:45.112Z');
     expect(message.html).toContain('123&lt;56');
     expect(message.html).toContain('Код действителен до 21.08.2026, 18:00 МСК.');
     expect(message.html).not.toContain('2026-08-21T15:00:45.112Z');
-    expect(message.html).toContain('Florelle');
+    expect(message.html).toContain('Bloom-send');
   });
 
   it('sends a registration code through SMTP transport', async () => {
     const sendMail = vi.fn().mockResolvedValue({ messageId: 'smtp-123' });
     const transport = { sendMail } as unknown as MailTransport;
-    const service = new NotificationsService('Florelle <support@example.com>', transport);
+    const service = new NotificationsService('Bloom-send <support@example.com>', transport);
 
     await service.sendRegistrationCode({
       to: 'buyer@example.com',
@@ -37,9 +37,9 @@ describe('NotificationsService', () => {
 
     expect(sendMail).toHaveBeenCalledWith(
       expect.objectContaining({
-        from: 'Florelle <support@example.com>',
+        from: 'Bloom-send <support@example.com>',
         to: 'buyer@example.com',
-        subject: 'Код подтверждения регистрации — Florelle',
+        subject: 'Код подтверждения регистрации — Bloom-send',
         text: expect.stringContaining('Код подтверждения: 123456'),
         html: expect.stringContaining('123456'),
         headers: {
@@ -56,7 +56,7 @@ describe('NotificationsService', () => {
       paidAt: new Date('2026-08-21T15:00:45.112Z'),
     });
 
-    expect(message.subject).toBe('Оплата заказа принята — Florelle');
+    expect(message.subject).toBe('Оплата заказа принята — Bloom-send');
     expect(message.text).toContain('Спасибо за заказ.');
     expect(message.text).toContain('Номер заказа: order-123<');
     expect(message.text).toContain('Сумма заказа: $120.50');
@@ -68,7 +68,7 @@ describe('NotificationsService', () => {
   it('sends a paid order email through SMTP transport', async () => {
     const sendMail = vi.fn().mockResolvedValue({ messageId: 'smtp-order-123' });
     const transport = { sendMail } as unknown as MailTransport;
-    const service = new NotificationsService('Florelle <support@example.com>', transport);
+    const service = new NotificationsService('Bloom-send <support@example.com>', transport);
 
     await service.sendOrderPaid({
       to: 'buyer@example.com',
@@ -80,9 +80,9 @@ describe('NotificationsService', () => {
 
     expect(sendMail).toHaveBeenCalledWith(
       expect.objectContaining({
-        from: 'Florelle <support@example.com>',
+        from: 'Bloom-send <support@example.com>',
         to: 'buyer@example.com',
-        subject: 'Оплата заказа принята — Florelle',
+        subject: 'Оплата заказа принята — Bloom-send',
         text: expect.stringContaining('Номер заказа: order-123'),
         html: expect.stringContaining('order-123'),
         headers: {

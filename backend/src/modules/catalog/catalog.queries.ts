@@ -72,7 +72,7 @@ export async function queryListings(
   }
   if (filters.color) {
     const color=sql`lower(coalesce(nullif(${products.color},''),${products.slug}))`;
-    const colorGroup=sql`CASE WHEN ${color} ~ 'pink|peach|salmon' THEN 'pink' WHEN ${color} ~ 'white|cream' THEN 'white' WHEN ${color} ~ 'yellow' THEN 'yellow' WHEN ${color} ~ 'orange' THEN 'orange' WHEN ${color} ~ 'red|burgundy' THEN 'red' WHEN ${color} ~ 'lilac|purple|lavand' THEN 'purple' WHEN ${color} ~ 'green' THEN 'green' ELSE 'mixed' END`;
+    const colorGroup=sql`CASE WHEN ${color} ~ 'pink|peach|salmon' THEN 'pink' WHEN ${color} ~ 'white|cream' THEN 'white' WHEN ${color} ~ 'yellow' THEN 'yellow' WHEN ${color} ~ 'orange' THEN 'orange' WHEN ${color} ~ 'red|burgundy' THEN 'red' WHEN ${color} ~ 'lilac|purple|lavand' THEN 'purple' WHEN ${color} ~ 'green' THEN 'green' WHEN lower(${products.color}) ~ '(^|[^a-z])(multicolor|mixed)([^a-z]|$)' THEN 'mixed' ELSE NULL END`;
     const groups=new Set(['pink','white','yellow','orange','red','purple','green','mixed']);
     baseConditions.push(or(...filters.color.split(',').filter(Boolean).map(c=>groups.has(c)?eq(colorGroup,c):ilike(products.color,c)))!);
   }

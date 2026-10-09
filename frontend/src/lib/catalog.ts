@@ -10,7 +10,7 @@ export function itemPrice(p:Listing,s:Segment,c:Currency,rates:Record<string,num
 export function available(p:Listing,s:Segment){return s==='b2b'?(p.wholesale?.available_units??0):p.available_units}
 export function money(n:number,c:Currency){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:c==='RUB'?0:2}).format(n)+' '+symbols[c]}
 export function categoryOf(p:Listing,en=false){return (en?p.category?.name_en:p.category?.name)||(en?'Flowers':'Цветы')}
-export function colorGroup(p:Listing){const c=(p.color||p.product.slug).toLowerCase();if(/pink|peach|salmon/.test(c))return 'pink';if(/white|cream/.test(c))return 'white';if(/yellow/.test(c))return 'yellow';if(/orange/.test(c))return 'orange';if(/red|burgundy/.test(c))return 'red';if(/lilac|purple|lavand/.test(c))return 'purple';if(/green/.test(c))return 'green';return 'mixed'}
+export function colorGroup(p:Listing){const c=(p.color||p.product.slug).toLowerCase();if(/pink|peach|salmon/.test(c))return 'pink';if(/white|cream/.test(c))return 'white';if(/yellow/.test(c))return 'yellow';if(/orange/.test(c))return 'orange';if(/red|burgundy/.test(c))return 'red';if(/lilac|purple|lavand/.test(c))return 'purple';if(/green/.test(c))return 'green';if(/(^|[^a-z])(multicolor|mixed)([^a-z]|$)/.test((p.color||'').toLowerCase()))return 'mixed';return null}
 export const colorNames:Record<string,[string,string,string]>={pink:['Розовый','Pink','#e5a7bb'],white:['Белый','White','#fff'],yellow:['Жёлтый','Yellow','#e5cf7b'],orange:['Оранжевый','Orange','#dc895e'],red:['Красный','Red','#9f344b'],purple:['Сиреневый','Purple','#a488b2'],green:['Зелёный','Green','#839970'],mixed:['Микс','Mixed','#bdad9f']};
 
 export function flowerImage(src:string){return src}

@@ -38,3 +38,13 @@ for (const [now, earliest] of [
   expect(()=>validateDelivery({...input,delivery:{...input.delivery,date:earliest}},countries,date)).not.toThrow();
  });
 }
+
+for(const segment of ['b2c','b2b'] as const){
+ it(`rejects scheduled delivery for new ${segment} quotes`,()=>{
+  expect(()=>calculateQuote([line],{...input,segment,delivery:{...input.delivery,mode:2}},rates,countries,12,2.5)).toThrow('Выберите способ доставки');
+ });
+}
+it('rejects express wholesale but keeps standard wholesale price and weight',()=>{
+ expect(()=>calculateQuote([line],{...input,segment:'b2b',delivery:{...input.delivery,mode:1}},rates,countries,12,2.5)).toThrow('Выберите способ доставки');
+ expect(calculateQuote([{...line,quantity:2}],{...input,segment:'b2b'},rates,countries,12,2.5)).toMatchObject({estimatedWeightKg:19,shipping:'1368.00'});
+});

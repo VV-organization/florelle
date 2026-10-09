@@ -124,7 +124,7 @@ export function validateDelivery(
       "INVALID_DELIVERY_WINDOW",
       "Выберите интервал доставки",
     );
-  if (!Number.isInteger(d.mode ?? 0) || (d.mode ?? 0) < 0 || (d.mode ?? 0) > 2)
+  if (!Number.isInteger(d.mode ?? 0) || (d.mode ?? 0) < 0 || (d.mode ?? 0) > (input.segment === "b2b" ? 0 : 1))
     throw new AppError(
       400,
       "INVALID_DELIVERY_MODE",

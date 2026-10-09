@@ -102,23 +102,23 @@ export function renderRegistrationCodeEmail(input: {
   const code = escapeHtml(input.code);
   const expiresAt = formatEmailExpiration(input.expiresAt);
   return {
-    subject: 'Код подтверждения регистрации — Florelle',
+    subject: 'Код подтверждения регистрации — Bloom-send',
     text: [
       'Здравствуйте!',
       '',
-      'Благодарим за регистрацию в Florelle.',
+      'Благодарим за регистрацию в Bloom-send.',
       '',
       `Код подтверждения: ${input.code}`,
       '',
       `Код действителен до ${expiresAt}.`,
       '',
-      'Если вы не регистрировались в Florelle, просто проигнорируйте это письмо.',
+      'Если вы не регистрировались в Bloom-send, просто проигнорируйте это письмо.',
       '',
       'С уважением,',
-      'Команда Florelle',
+      'Команда Bloom-send',
     ].join('\n'),
     html: emailHtml(
-      `<p>Здравствуйте!</p><p>Благодарим за регистрацию в Florelle.</p><p>Введите этот код, чтобы подтвердить email:</p><p style="font-size:24px;font-weight:700;letter-spacing:3px;padding:16px;background:#f0f5ea;border-radius:8px">${code}</p><p>Код действителен до ${escapeHtml(expiresAt)}.</p><p>Если вы не регистрировались в Florelle, просто проигнорируйте это письмо.</p>`,
+      `<p>Здравствуйте!</p><p>Благодарим за регистрацию в Bloom-send.</p><p>Введите этот код, чтобы подтвердить email:</p><p style="font-size:24px;font-weight:700;letter-spacing:3px;padding:16px;background:#f0f5ea;border-radius:8px">${code}</p><p>Код действителен до ${escapeHtml(expiresAt)}.</p><p>Если вы не регистрировались в Bloom-send, просто проигнорируйте это письмо.</p>`,
     ),
   };
 }
@@ -133,7 +133,7 @@ export function renderOrderPaidEmail(input: {
   const total = input.amountRub ? `${input.amountRub} ₽` : `$${input.totalUsd}`;
   const paidAt = formatEmailExpiration(input.paidAt);
   return {
-    subject: 'Оплата заказа принята — Florelle',
+    subject: 'Оплата заказа принята — Bloom-send',
     text: [
       'Здравствуйте!',
       '',
@@ -146,7 +146,7 @@ export function renderOrderPaidEmail(input: {
       'Мы приняли оплату и передали заказ в обработку.',
       '',
       'С уважением,',
-      'Команда Florelle',
+      'Команда Bloom-send',
     ].join('\n'),
     html: emailHtml(
       `<p>Здравствуйте!</p><p>Спасибо за заказ.</p><p><strong>Номер заказа:</strong> ${orderId}<br><strong>Сумма заказа:</strong> ${escapeHtml(total)}<br><strong>Оплата получена:</strong> ${escapeHtml(paidAt)}.</p><p>Мы приняли оплату и передали заказ в обработку.</p>`,
@@ -171,7 +171,7 @@ function formatEmailDateTime(date: Date): string {
 }
 
 function emailHtml(content: string): string {
-  return `<!doctype html><html lang="ru"><body style="margin:0;background:#f6f7fb;color:#18212f;font-family:Arial,sans-serif"><main style="max-width:560px;margin:32px auto;padding:32px;background:#fff;border-radius:12px"><div style="font-size:24px;font-weight:700;margin-bottom:24px">Florelle</div>${content}<p style="margin-top:28px">С уважением,<br><strong>Команда Florelle</strong></p></main></body></html>`;
+  return `<!doctype html><html lang="ru"><body style="margin:0;background:#f6f7fb;color:#18212f;font-family:Arial,sans-serif"><main style="max-width:560px;margin:32px auto;padding:32px;background:#fff;border-radius:12px"><div style="font-size:24px;font-weight:700;margin-bottom:24px">Bloom-send</div>${content}<p style="margin-top:28px">С уважением,<br><strong>Команда Bloom-send</strong></p></main></body></html>`;
 }
 
 function escapeHtml(value: string): string {

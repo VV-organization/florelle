@@ -89,7 +89,7 @@ export class ArcPayService {
       cancel_url: input.returnUrl,
       locale: "ru",
       metadata: { florelle_order_id: input.orderId },
-      description: `Florelle order ${input.orderId}`,
+      description: `Bloom-send order ${input.orderId}`,
     };
   }
   async advance(orderId: string) {
