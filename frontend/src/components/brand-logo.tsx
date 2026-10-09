@@ -41,7 +41,7 @@ export default function BrandLogo({en=false,className=''}:BrandLogoProps){
   document.addEventListener('visibilitychange',update);reduced.addEventListener('change',update);update();
   return()=>{cancelAnimationFrame(frame);rotation.cancel();observer.disconnect();window.removeEventListener('wheel',input);window.removeEventListener('touchmove',input);window.removeEventListener('scroll',scroll);document.removeEventListener('visibilitychange',update);reduced.removeEventListener('change',update)};
  },[]);
- return <span className={`florelle-logo ${className}`} role="img" aria-label={en?'Florelle — flower atelier':'Florelle — цветочное ателье'}>
+ return <span className={`florelle-logo ${className}`} role="img" aria-label={en?'Bloom-send — flower atelier':'Bloom-send — цветочное ателье'}>
   <img ref={ring} className="florelle-logo__seal" src={assetPath(`/brand/florelle-ring-${en?'en':'ru'}-cream.svg`)} width="120" height="120" alt="" aria-hidden="true"/>
   <img className="florelle-logo__flower" src={assetPath('/brand/florelle-flower-centered.svg')} width="120" height="120" alt="" aria-hidden="true"/>
  </span>

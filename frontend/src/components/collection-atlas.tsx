@@ -9,7 +9,7 @@ import {useShop} from './shop-context';
 const flowers = [
  {slug:'rose-1',ru:'Розы',en:'Roses',image:'/catalog/cutouts/2779.webp',note:['Нежность в каждом лепестке','Tenderness in every petal'],copy:['От воздушных пудровых до глубоких винных оттенков. Найдите розу для своего признания.','From powdery pastels to deep wine shades. Find a rose that speaks for you.']},
  {slug:'peonies-25',ru:'Пионы',en:'Peonies',image:'/catalog/cutouts/28261.webp',note:['Мгновение расцвета','A moment in bloom'],copy:['Объёмные бутоны и невесомые лепестки. Для встреч, которые хочется запомнить.','Generous buds and weightless petals. For moments you want to remember.']},
- {slug:'hydrangea-24',ru:'Гортензии',en:'Hydrangeas',image:'/catalog/cutouts/28946.webp',note:['Целое облако чувств','A cloud of feeling'],copy:['Множество маленьких цветов в одном соцветии. Нежный акцент или основа пышкого букета.','A multitude of little flowers in a single head. A delicate accent or the heart of a generous bouquet.']},
+ {slug:'hydrangea-24',ru:'Гортензии',en:'Hydrangeas',image:'/catalog/cutouts/28946.webp',note:['Целое облако чувств','A cloud of feeling'],copy:['Множество маленьких цветов в одном соцветии. Нежный акцент или основа пышного букета.','A multitude of little flowers in a single head. A delicate accent or the heart of a generous bouquet.']},
 ];
 
 export default function CollectionAtlas(){
