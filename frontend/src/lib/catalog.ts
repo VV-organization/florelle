@@ -14,3 +14,6 @@ export function colorGroup(p:Listing){const c=(p.color||p.product.slug).toLowerC
 export const colorNames:Record<string,[string,string,string]>={pink:['Розовый','Pink','#e5a7bb'],white:['Белый','White','#fff'],yellow:['Жёлтый','Yellow','#e5cf7b'],orange:['Оранжевый','Orange','#dc895e'],red:['Красный','Red','#9f344b'],purple:['Сиреневый','Purple','#a488b2'],green:['Зелёный','Green','#839970'],mixed:['Микс','Mixed','#bdad9f']};
 
 export function flowerImage(src:string){return src}
+
+// Matches the estimated shipment weight used by backend checkout pricing.
+export function estimatedBoxWeightKg(stems:number){return Math.max(1,Math.ceil(stems*0.08*1.15))}
