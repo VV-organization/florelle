@@ -272,7 +272,7 @@ describeDatabase("Arc Pay durable checkout with PostgreSQL", () => {
         sellerPriceUsd: "9.99",
         amsPriceUsd: "8.88",
         wholesalePrice: "53.17",
-        retailPrice: "137.11",
+        retailPrice: "411.33",
         referencePrice: "111.23",
         priceCurrency: "RUB",
         boxQuantity: 10,
@@ -431,7 +431,7 @@ describeDatabase("Arc Pay durable checkout with PostgreSQL", () => {
       key: a.id,
       body: {
         external_id: a.id,
-        amount: 188563,
+        amount: 495690,
         currency: "RUB",
         customer_email: expect.any(String),
         payment_methods: [{ method: "sbp", payment_mode: "h2h" }],
@@ -676,7 +676,7 @@ describeDatabase("Arc Pay durable checkout with PostgreSQL", () => {
     expect(delivered).toHaveLength(1);
     expect(delivered[0]).toMatchObject({
       orderId: p.order.id,
-      amountRub: "1885.63",
+      amountRub: "4956.90",
       idempotencyKey: "order-paid/" + p.order.id,
     });
   });
@@ -705,7 +705,7 @@ describeDatabase("Arc Pay durable checkout with PostgreSQL", () => {
     expect((await service.getOrder(p.userId, p.order.id)).status).toBe("paid");
   });
 
-  it.each([{ min_amount: 200000 }, { max_amount: 100000 }])(
+  it.each([{ min_amount: 600000 }, { max_amount: 100000 }])(
     "rejects unavailable amount before reserving stock or deleting cart: %j",
     async (limits) => {
       advertisedLimits = limits;

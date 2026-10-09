@@ -5,16 +5,17 @@ const countries=[{code:'RU',cities:[{value:'Moscow',rates:[72,52,38,32],minimums
 const input={segment:'b2c' as const,displayCurrency:'RUB',shippingAddress:{address:'Street 100',contactName:'Customer',contactPhone:'+7 900 123 45 67'},delivery:{countryCode:'RU' as const,cityValue:'Moscow',mode:0,date:'2099-01-01',window:'09:00–13:00'}};
 const line={listingId:'one',quantity:10,boxQuantity:100,availableStems:4199,priceCurrency:'RUB',wholesalePrice:'37.97',retailPrice:'95.34',referencePrice:'49.78',sellerPriceUsd:'0.38'};
 describe('authoritative quote',()=>{
- it.each(['b2c','b2b'] as const)('enforces the inclusive 1000 RUB minimum for %s regardless of display currency',segment=>{
-  for(const [price,missing] of [['999.99','0.01'],['1000.00','0.00'],['1000.01','0.00']]){
+ it.each(['b2c','b2b'] as const)('enforces the segment-specific minimum for %s regardless of display currency',segment=>{
+  const minimum=segment==='b2b'?5000:3000;
+  for(const [price,missing] of [[(minimum-0.01).toFixed(2),'0.01'],[minimum.toFixed(2),'0.00'],[(minimum+0.01).toFixed(2),'0.00']]){
    for(const displayCurrency of ['RUB','USD','KZT','TRY']){
     const q=calculateQuote([{...line,quantity:1,boxQuantity:1,retailPrice:price,wholesalePrice:price}],{...input,segment,displayCurrency},rates,countries,0,2.5);
     expect(q.minimumMissingRub).toBe(missing);
    }
   }
  });
- it('preserves independent imported retail cents and adds commission and shipping',()=>{const q=calculateQuote([line],input,rates,countries,12,2.5);expect(q).toMatchObject({subtotal:'953.40',commission:'114.41',shipping:'350.00',total:'1417.81',minimumMissing:'0.00'});});
- it('checks minimum before delivery can lift the order over the threshold',()=>{const q=calculateQuote([{...line,quantity:1}],input,rates,countries,12,2.5);expect(q.minimumMissing).toBe('893.22');});
+ it('preserves independent imported retail cents and adds commission and shipping',()=>{const q=calculateQuote([line],input,rates,countries,12,2.5);expect(q).toMatchObject({subtotal:'953.40',commission:'114.41',shipping:'350.00',total:'1417.81',minimumMissing:'1932.19'});});
+ it('checks minimum before delivery can lift the order over the threshold',()=>{const q=calculateQuote([{...line,quantity:1}],input,rates,countries,12,2.5);expect(q.minimumMissing).toBe('2893.22');});
  it('counts boxes as stems and rejects overselling partial boxes',()=>{const q=calculateQuote([{...line,quantity:1}],{...input,segment:'b2b'},rates,countries,12,2.5);expect(q).toMatchObject({subtotal:'3797.00',estimatedWeightKg:10,shipping:'900.00'});expect(()=>calculateQuote([{...line,quantity:42}],{...input,segment:'b2b'},rates,countries,12,2.5)).toThrow(/stock/i);});
  it('keeps express delivery charge above free threshold',()=>{const q=calculateQuote([{...line,quantity:120}],{...input,delivery:{...input.delivery,mode:1}},rates,countries,12,2.5);expect(q.shipping).toBe('700.00');});
  it('rejects unconfigured rates instead of treating currencies as equal',()=>{expect(()=>calculateQuote([line],input,{...rates,RUB:0},countries,12,2.5)).toThrow(/rate/i);});

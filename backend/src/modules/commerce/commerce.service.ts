@@ -335,7 +335,7 @@ export class CommerceService {
         settings.retailRates,
       );
       if (Number(quote.minimumMissingRub) > 0)
-        throw fail("MINIMUM_ORDER", "Минимальная сумма заказа — 1 000 ₽", 400);
+        throw fail("MINIMUM_ORDER", `Минимальная сумма заказа — ${input.segment === "b2b" ? "5 000" : "3 000"} ₽`, 400);
       validatePaymentAmount?.(quote.paymentAmountMinor);
       const merchantOrderId = "FLR-" + randomUUID();
       const snapshot: OrderSnapshot = {

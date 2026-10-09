@@ -88,7 +88,7 @@ describeDatabase('CommerceService with real PostgreSQL', () => {
     await db.insert(categories).values({ id: fixture.categoryId, slug: `test-${fixture.categoryId}`, name: { en: 'Test category', ru: 'Тест категория' } });
     await db.insert(sellers).values({ id: fixture.sellerId, slug: `test-${fixture.sellerId}`, name: { en: 'Test seller', ru: 'Тест продавец' }, country: 'RU' });
     await db.insert(products).values({ id: fixture.productId, categoryId: fixture.categoryId, slug: `test-${fixture.productId}`, name: { en: 'Test rose', ru: 'Тест роза' }, species: 'rose', color: 'white', imageUrl: '/media/test-only.webp' });
-    await db.insert(listings).values({ id: fixture.listingId, productId: fixture.productId, sellerId: fixture.sellerId, sellerPriceUsd: '9.99', amsPriceUsd: '8.88', wholesalePrice: '53.17', retailPrice: '137.11', referencePrice: '111.23', priceCurrency: 'RUB', boxQuantity: 10, availableStems: 100, deliveryDate: '2099-01-01' });
+    await db.insert(listings).values({ id: fixture.listingId, productId: fixture.productId, sellerId: fixture.sellerId, sellerPriceUsd: '9.99', amsPriceUsd: '8.88', wholesalePrice: '265.85', retailPrice: '411.33', referencePrice: '111.23', priceCurrency: 'RUB', boxQuantity: 10, availableStems: 100, deliveryDate: '2099-01-01' });
   });
   afterEach(async () => {
     if (!fixture) return;
@@ -114,33 +114,36 @@ describeDatabase('CommerceService with real PostgreSQL', () => {
   it('preserves exact native RUB prices and B2C stock units through cart, quote and persisted order', async () => {
     const userId = await addUser(); await fillCart(userId);
     const cart = await service.getCart(userId);
-    expect(cart.items[0]!.listing).toMatchObject({ sellerPrice: '137.11', amsPrice: '111.23', availableStock: 100, unit: 'stem' });
-    expect(cart).toMatchObject({ subtotal: '1371.10', commission: '164.53', total: '1535.63' });
+    expect(cart.items[0]!.listing).toMatchObject({ sellerPrice: '411.33', amsPrice: '111.23', availableStock: 100, unit: 'stem' });
+    expect(cart).toMatchObject({ subtotal: '4113.30', commission: '493.60', total: '4606.90' });
     const quote = await service.quote(userId, input());
-    expect(quote).toMatchObject({ subtotal: '1371.10', commission: '164.53', shipping: '350.00', total: '1885.63', minimumMissing: '0.00', estimatedStems: 10, paymentAmountMinor: 188563 });
+    expect(quote).toMatchObject({ subtotal: '4113.30', commission: '493.60', shipping: '350.00', total: '4956.90', minimumMissing: '0.00', estimatedStems: 10, paymentAmountMinor: 495690 });
     const result = await service.createOrder(userId, input(), randomUUID());
-    expect(result.order).toMatchObject({ total: '1885.63', totalUsd: '18.86', delivery: input().delivery });
+    expect(result.order).toMatchObject({ total: '4956.90', totalUsd: '49.57', delivery: input().delivery });
     expect(await stock()).toBe(90);
-    expect((await attempts(result.order.id)).amountMinor).toBe(188563);
-    expect(provider.createPaymentOrder).toHaveBeenCalledWith(expect.objectContaining({ amountMinor: 188563 }));
+    expect((await attempts(result.order.id)).amountMinor).toBe(495690);
+    expect(provider.createPaymentOrder).toHaveBeenCalledWith(expect.objectContaining({ amountMinor: 495690 }));
   });
 
   it('uses boxes for B2B prices, reserves stems and applies persisted delivery tariffs', async () => {
     const userId = await addUser('b2b'); await fillCart(userId, 2, 'b2b');
     const cart = await service.getCart(userId);
-    expect(cart.items[0]!.listing).toMatchObject({ sellerPrice: '53.17', availableStock: 10, unit: 'box' });
-    expect(cart.items[0]!.lineTotal).toBe('1063.40');
+    expect(cart.items[0]!.listing).toMatchObject({ sellerPrice: '265.85', availableStock: 10, unit: 'box' });
+    expect(cart.items[0]!.lineTotal).toBe('5317.00');
     const quote = await service.quote(userId, input('b2b'));
-    expect(quote).toMatchObject({ subtotal: '1063.40', commission: '127.61', shipping: '900.00', total: '2091.01', estimatedStems: 20, estimatedWeightKg: 2 });
+    expect(quote).toMatchObject({ subtotal: '5317.00', commission: '638.04', shipping: '900.00', total: '6855.04', estimatedStems: 20, estimatedWeightKg: 2 });
     await service.createOrder(userId, input('b2b'), randomUUID());
     expect(await stock()).toBe(80);
   });
 
-  it('rejects B2C below 1000 RUB including commission but excluding shipping without reserving stock', async () => {
-    const userId = await addUser(); await fillCart(userId, 6);
-    const quote = await service.quote(userId, input());
-    expect(quote).toMatchObject({ minimumMissing: '78.62', total: '1271.38' });
-    await expect(service.createOrder(userId, input(), randomUUID())).rejects.toMatchObject({ code: 'MINIMUM_ORDER' });
+  it.each([
+    { segment: 'b2c' as const, quantity: 6, missing: '235.86', total: '3114.14', minimum: '3 000' },
+    { segment: 'b2b' as const, quantity: 1, missing: '2022.48', total: '3877.52', minimum: '5 000' },
+  ])('rejects $segment below its minimum without reserving stock', async ({ segment, quantity, missing, total, minimum }) => {
+    const userId = await addUser(segment); await fillCart(userId, quantity, segment);
+    const quote = await service.quote(userId, input(segment));
+    expect(quote).toMatchObject({ minimumMissing: missing, total });
+    await expect(service.createOrder(userId, input(segment), randomUUID())).rejects.toMatchObject({ code: 'MINIMUM_ORDER', message: `Минимальная сумма заказа — ${minimum} ₽` });
     expect(await stock()).toBe(100); expect(provider.createPaymentOrder).not.toHaveBeenCalled();
     expect(await db.select().from(orders).where(eq(orders.buyerId, userId))).toEqual([]);
     expect((await service.getCart(userId)).items).toHaveLength(1);
@@ -206,8 +209,8 @@ describeDatabase('CommerceService with real PostgreSQL', () => {
     await db.update(products).set({ name: { ru: 'Изменённая роза', en: 'Changed rose' }, imageUrl: '/media/changed.webp' }).where(eq(products.id, fixture.productId));
     const persisted = await service.getOrder(userId, placed.order.id);
     expect(persisted.items).toEqual(placed.order.items);
-    expect(persisted.items[0]).toMatchObject({ name: 'Тест роза', image: '/media/test-only.webp', price: '137.11', lineTotal: '1371.10' });
-    expect(persisted).toMatchObject({ total: '1885.63', delivery: input().delivery });
+    expect(persisted.items[0]).toMatchObject({ name: 'Тест роза', image: '/media/test-only.webp', price: '411.33', lineTotal: '4113.30' });
+    expect(persisted).toMatchObject({ total: '4956.90', delivery: input().delivery });
   });
   it('rejects invalid signatures, amounts, currencies and identities without settling or releasing stock', async () => {
     const userId = await addUser(); await fillCart(userId);
