@@ -26,7 +26,7 @@ export type PaymentIntegrationOutbox = {
       source: string;
       order: PaymentIntegrationOrder;
       items: PaymentIntegrationOrderItem[];
-      payment: { status: string; provider: string; paidAt: Date | null };
+      payment: { status: string; provider: string; paidAt: Date | null; method?: 'card' | 'sbp' };
     },
   ) => Promise<unknown>;
 };
@@ -63,6 +63,10 @@ export class WebhookService {
       return { handled: false, reason: 'parse_failed' };
     }
 
+    return this.processPayload(payload);
+  }
+
+  protected async processPayload(payload: WebhookPayload): Promise<{ handled: boolean; reason?: string }> {
     // 3. Intermediate provider statuses are informational. They must not
     // cancel orders or restore stock.
     if (payload.status === 'pending') {
@@ -124,6 +128,7 @@ export class WebhookService {
             status: 'paid',
             provider: payment.provider,
             paidAt: transitionedAt,
+            method: payload.method,
           },
         });
 

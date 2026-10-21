@@ -223,8 +223,14 @@ export async function buildApp(): Promise<FastifyInstance> {
   const recoverPayments = async () => {
     await commerceService.recoverPaymentLinks();
     await arcPay?.tick();
+    await webhookService.reconcilePending();
   };
-  const paymentRecoveryTimer = setInterval(() => recoverPayments().catch(() => app.log.error('payment recovery failed')), 15000);
+  let recoveringPayments = false;
+  const paymentRecoveryTimer = setInterval(() => {
+    if (recoveringPayments) return;
+    recoveringPayments = true;
+    void recoverPayments().catch(() => app.log.error('payment recovery failed')).finally(() => { recoveringPayments = false; });
+  }, 15000);
   paymentRecoveryTimer.unref();
   app.addHook('onClose', () => clearInterval(paymentRecoveryTimer));
   await app.register(buildMediaRouter(env.MEDIA_ROOT));
@@ -235,6 +241,8 @@ export async function buildApp(): Promise<FastifyInstance> {
     paymentIntegrationOutbox,
     notificationsService,
   );
+
+  commerceService.setPaymentReconciler(id => webhookService.reconcileOrder(id));
 
   await app.register(buildIntegrationRouter(integrationService, integrationConfig, catalogProtocolService), {
     prefix: '/admin/integration',
@@ -278,7 +286,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 }
 
 function createPaymentProvider(fxService: FxService): PaymentProvider {
-  if (env.PAYMENT_PROVIDER !== 'arcopay' && !(env.ARCOPAY_API_URL && env.ARCOPAY_API_KEY && env.ARCOPAY_BEARER_TOKEN && env.ARCOPAY_PUBLIC_KEY)) {
+  if (env.PAYMENT_PROVIDER !== 'arcopay') {
     return new DisabledPaymentProvider();
   }
 
@@ -292,6 +300,7 @@ function createPaymentProvider(fxService: FxService): PaymentProvider {
     apiKey,
     bearerToken,
     publicKey,
+    shopId: env.ARCOPAY_SHOP_ID,
     convertUsdToRub: (amountUsd) => fxService.convert(amountUsd, 'RUB'),
   });
 }

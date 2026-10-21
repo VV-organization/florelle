@@ -403,8 +403,11 @@ describeDatabase("Arc Pay durable checkout with PostgreSQL", () => {
     let admissionFreeDuringProviderRequest = false;
     onCreate = async () => {
       await db.transaction(async tx => {
-        const result = await tx.execute<{ acquired: boolean }>(sql`select pg_try_advisory_xact_lock(hashtextextended('florelle-synthetic-checkout', 0)) as acquired`);
-        admissionFreeDuringProviderRequest = result[0]!.acquired;
+        // Another concurrent reservation may briefly own this lock. Wait for it,
+        // but fail if the transaction invoking provider I/O still holds it.
+        await tx.execute(sql`set local lock_timeout = '1s'`);
+        await tx.execute(sql`select pg_advisory_xact_lock(hashtextextended('florelle-synthetic-checkout', 0))`);
+        admissionFreeDuringProviderRequest = true;
       });
     };
     const adapter = new ScenarioCheckoutService(db, service);

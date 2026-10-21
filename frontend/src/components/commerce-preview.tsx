@@ -6,7 +6,7 @@ import {useRouter} from 'next/navigation';
 import MotionText from './motion-text';
 import {useQuery} from '@tanstack/react-query';
 import {api} from '@/lib/api-client';
-import {paymentHref,paymentRubles,formatPaymentRubles} from '@/lib/payment';
+import {paymentHref,paymentRubles,formatPaymentRubles,submitHostedPayment} from '@/lib/payment';
 import type {Order} from '@/lib/storefront-types';
 import {useShop,type CartLine} from './shop-context';
 import {money,estimatedBoxWeightKg,type Currency,type Photo} from '@/lib/catalog';
@@ -30,7 +30,7 @@ export function CheckoutPreview(){
   e.preventDefault();if(!quote.data||quote.isFetching||!minimumOK||busy)return;
   setBusy(true);setError('');key.current ||= crypto.randomUUID();
   try{const result=await api.request<{order:Order;paymentUrl?:string;paymentStatus?:string}>('/orders',{method:'POST',headers:{'Idempotency-Key':key.current},body:JSON.stringify(payload)});await s.clear();
-   const hostedUrl=paymentHref({...result.order,paymentUrl:result.paymentUrl??result.order.paymentUrl});if(hostedUrl){location.assign(hostedUrl);return;}router.push('/orders/'+result.order.id);
+   const hostedUrl=paymentHref({...result.order,paymentUrl:result.paymentUrl??result.order.paymentUrl});if(hostedUrl){submitHostedPayment({...result.order,paymentUrl:hostedUrl});return;}router.push('/orders/'+result.order.id);
   }catch(e){setError(e instanceof Error?e.message:s.t('Не удалось сохранить заказ. Попробуйте ещё раз.','Could not save your order. Please try again.'));setBusy(false)}
  }
  if(!s.ready)return <main className="ym-hide-content page-shell commerce-page"><p>{s.t('Загрузка…','Loading…')}</p></main>;
@@ -55,11 +55,11 @@ function OrderPaymentActions({order,onRefresh}:{order:ShopOrder;onRefresh:()=>Pr
  const href=paymentHref(order),rubles=paymentRubles(order);
  async function resume(){
   if(busy)return;setBusy(true);setError('');
-  try{const updated=await api.request<Order>('/orders/'+encodeURIComponent(order.id)+'/payment',{method:'POST'});const url=paymentHref(updated);if(url){location.assign(url);return;}await onRefresh();}
+  try{const updated=await api.request<Order>('/orders/'+encodeURIComponent(order.id)+'/payment',{method:'POST'});const url=paymentHref(updated);if(url){submitHostedPayment(updated);return;}await onRefresh();}
   catch(e){setError(e instanceof Error?e.message:s.t('Не удалось проверить оплату.','Could not check payment.'));}
   finally{setBusy(false);}
  }
- return <>{order.status==='pending'&&rubles!==null&&<p>{s.t('К оплате через СБП:','SBP amount due:')} {formatPaymentRubles(rubles)}</p>}
+ return <>{order.status==='pending'&&rubles!==null&&<p>{s.t('К оплате:','Amount due:')} {formatPaymentRubles(rubles)}</p>}
  {href&&<button type="button" className="button primary" disabled={busy} onClick={resume}>{busy?s.t('Проверяем оплату…','Checking payment…'):s.t('Перейти к оплате','Proceed to payment')}</button>}
  {order.paymentStatus==='review'?<p role="status">{s.t('Проверяем статус платежа. Заказ сохранён. Повторная оплата не требуется.','Checking payment status. Your order is saved. Do not pay again.')}</p>:order.status==='pending'&&!href&&<p role="status">{s.t('Готовим оплату. Статус обновится автоматически.','Preparing payment. The status will update automatically.')}</p>}
  {error&&<p role="alert" className="error-message">{error}</p>}</>;

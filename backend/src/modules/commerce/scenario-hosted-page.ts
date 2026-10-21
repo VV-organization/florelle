@@ -1,10 +1,10 @@
 import { AppError } from '../../shared/middleware/error.middleware';
 
-/** Read only: never submit a payment or follow a redirect outside Arc Pay. */
+/** Read only: never submit a payment or follow a redirect outside Arco Pay. */
 export async function verifyHostedPaymentPage(value: string): Promise<void> {
   try {
     const url = new URL(value);
-    if (url.protocol !== 'https:' || url.hostname !== 'pay.arcpay.space' || url.username || url.password || (url.port && url.port !== '443')) throw new Error('Unsafe URL');
+    if (url.protocol !== 'https:' || url.hostname !== 'payment.paidlayer.com' || url.username || url.password || (url.port && url.port !== '443')) throw new Error('Unsafe URL');
     const response = await fetch(url, { redirect: 'error', signal: AbortSignal.timeout(6000) });
     try {
       if (response.status !== 200 || !response.headers.get('content-type')?.includes('text/html')) throw new Error('Unavailable page');

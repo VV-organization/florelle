@@ -56,6 +56,8 @@ export type OrderSnapshot = Omit<ReturnType<typeof calculateQuote>, "items"> & {
 const fail = (code: string, message: string, status = 409) =>
   new AppError(status, code, message);
 export class CommerceService {
+  private reconcilePayment?: (orderId: string) => Promise<unknown>;
+  setPaymentReconciler(reconcile: (orderId: string) => Promise<unknown>) { this.reconcilePayment = reconcile; }
   readonly legacy: OrdersService;
   constructor(
     private db: Database,
@@ -475,6 +477,7 @@ export class CommerceService {
           throw Error("Provider has no durable creation API");
         const result = await this.provider.createPaymentOrder({
           merchantOrderId: claim.merchantOrderId,
+          idempotencyKey: claim.id,
           amountUsd: order.totalUsd,
           amountMinor: claim.amountMinor,
           description: "Bloom-send order " + order.id,
@@ -663,6 +666,8 @@ export class CommerceService {
       try { await this.arcPay.reconcile(id); }
       catch { throw fail("PAYMENT_STATUS_UNAVAILABLE", "Не удалось проверить статус оплаты. Попробуйте позже", 503); }
     }
+    try { await this.reconcilePayment?.(id); }
+    catch { throw fail("PAYMENT_STATUS_UNAVAILABLE", "Не удалось проверить статус оплаты. Попробуйте позже", 503); }
     await this.advancePayment(id);
     return this.getOrder(userId, id);
   }

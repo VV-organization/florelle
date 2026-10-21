@@ -70,6 +70,11 @@ describe('integration config', () => {
 });
 
 describe('IntegrationService', () => {
+  it.each(['card','sbp'] as const)('reports the confirmed payment method %s',method=>{
+    const event=createService().buildOrderEvent({eventType:'order.paid',occurredAt:new Date(),source:'customer',order:{id:'o',merchantOrderId:'m',totalUsd:'10',createdAt:new Date()},items:[],payment:{status:'paid',provider:'arcopay',paidAt:new Date(),method}});
+    expect(event.data.payment.method.type).toBe(method);
+  });
+
   it('maps Florelle order rows into a VV Admin order event', () => {
     const service = createService();
 

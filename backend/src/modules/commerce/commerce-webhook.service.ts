@@ -1,9 +1,9 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray, asc } from "drizzle-orm";
 import type { Database } from "../../shared/db/client";
 import { payments } from "../../shared/db/schema/payments";
 import { orders } from "../../shared/db/schema/orders";
 import { checkoutAttempts } from "../../shared/db/schema/checkout";
-import type { PaymentProvider } from "../payments/payment-provider";
+import type { PaymentProvider, WebhookPayload } from "../payments/payment-provider";
 import {
   WebhookService,
   type PaymentIntegrationOutbox,
@@ -32,6 +32,37 @@ export class CommerceWebhookService extends WebhookService {
     } catch {
       return { handled: false, reason: "parse_failed" };
     }
+    if (this.provider.getPaymentStatus) {
+      const status = await this.provider.getPaymentStatus(payload.externalId);
+      if (status.externalId !== payload.externalId || status.merchantOrderId !== payload.merchantOrderId || status.amountMinor !== payload.amountMinor || status.currency !== payload.currency)
+        return { handled: false, reason: "payment_amount_mismatch" };
+      payload = status;
+    }
+    return this.applyVerifiedPayload(payload);
+  }
+
+  async reconcileOrder(orderId: string) {
+    if (!this.provider.getPaymentStatus) return;
+    const [attempt] = await this.database.select().from(checkoutAttempts)
+      .where(and(eq(checkoutAttempts.orderId, orderId), eq(checkoutAttempts.provider, "arcopay"))).limit(1);
+    if (!attempt?.externalId || ["paid", "failed"].includes(attempt.state)) return;
+    const payload = await this.provider.getPaymentStatus(attempt.externalId);
+    if (payload.externalId !== attempt.externalId) throw new Error("Provider identity mismatch");
+    return this.applyVerifiedPayload(payload);
+  }
+
+  async reconcilePending() {
+    if (!this.provider.getPaymentStatus) return;
+    const attempts = await this.database.select({orderId: checkoutAttempts.orderId}).from(checkoutAttempts)
+      .where(and(eq(checkoutAttempts.provider, "arcopay"), inArray(checkoutAttempts.state, ["ready", "created_external"])))
+      .orderBy(asc(checkoutAttempts.updatedAt)).limit(25);
+    for (const attempt of attempts) {
+      try { await this.reconcileOrder(attempt.orderId); }
+      finally { await this.database.update(checkoutAttempts).set({updatedAt: new Date()}).where(eq(checkoutAttempts.orderId,attempt.orderId)); }
+    }
+  }
+
+  private async applyVerifiedPayload(payload: WebhookPayload) {
     let [attempt] = await this.database
       .select()
       .from(checkoutAttempts)
@@ -90,7 +121,7 @@ export class CommerceWebhookService extends WebhookService {
       payload.amountMinor !== attempt.amountMinor
     )
       return { handled: false, reason: "payment_amount_mismatch" };
-    const result = await super.handleCallback(rawBody, signature, body);
+    const result = await super.processPayload(payload);
     if (result.handled) {
       const [order] = await this.database
         .select({ status: orders.status })

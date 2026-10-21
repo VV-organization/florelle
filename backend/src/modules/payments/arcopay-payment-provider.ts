@@ -12,6 +12,7 @@ type ArcopayPaymentProviderConfig = {
   apiKey: string;
   bearerToken: string;
   publicKey: string;
+  shopId: string;
   fetchFn?: typeof fetch;
   requestTimeoutMs?: number;
   convertUsdToRub: (amountUsd: string) => Promise<string>;
@@ -31,6 +32,8 @@ type ArcopayOrder = {
   Amount: number;
   Currency: string;
   Status: string;
+  ShopId: string | number;
+  PaymentType?: string;
 };
 
 type ArcopayApiResponse = {
@@ -41,20 +44,12 @@ type ArcopayCreateResponse = ArcopayApiResponse & {
   Order?: ArcopayOrder;
 };
 
-type ArcopayQrcDataResponse = ArcopayApiResponse & {
-  Order?: ArcopayOrder;
-  Qrc?: {
-    QrcId: string;
-    Payload: string;
-  };
-};
-
 type ArcopayCallbackPayload = ArcopayApiResponse & {
   Order?: ArcopayOrder;
 };
 
 const PAID_STATUSES = new Set(["CHARGED", "IPS_ACCEPTED"]);
-const FAILED_STATUSES = new Set(["DECLINED", "EXPIRED"]);
+const FAILED_STATUSES = new Set(["DECLINED", "EXPIRED", "VOIDED"]);
 const DEFAULT_REQUEST_TIMEOUT_MS = 10_000;
 
 export class ArcopayPaymentProvider implements PaymentProvider {
@@ -101,17 +96,22 @@ export class ArcopayPaymentProvider implements PaymentProvider {
         MerchantOrderId: params.merchantOrderId,
         Currency: "RUB",
         Type: "PayIn",
-        PaymentTypes: ["IPS"],
+        PaymentTypes: ["CARD"],
         Amount: amountKopeks,
         FiscalData: { FiscalEnabled: false },
         ...(Object.keys(buyer).length > 0 ? { Buyer: buyer } : {}),
         CallbackUrl: params.callbackUrl,
-        IsForm: false,
-        LifeTime: 1800,
+        IsForm: true,
+        LifeTime: 900,
+        Description: params.description,
+        RedirectUrl: { SuccessUrl: params.successUrl, FailUrl: params.failUrl },
       },
+      params.idempotencyKey,
     );
 
-    const orderId = createResponse.Order?.OrderId;
+    const parsed = this.parseWebhookPayload(createResponse);
+    if (parsed.merchantOrderId !== params.merchantOrderId || parsed.amountMinor !== amountKopeks) throw new Error("Arco Pay order mismatch");
+    const orderId = parsed.externalId;
     if (!orderId) {
       throw new Error("Arcopay create payment response has no Order.OrderId");
     }
@@ -122,26 +122,15 @@ export class ArcopayPaymentProvider implements PaymentProvider {
   async getPaymentUrl(
     params: PaymentUrlParams,
   ): Promise<{ paymentUrl: string }> {
-    const qrcResponse = await this.post<ArcopayQrcDataResponse>(
-      "/payments/ips/qrcData",
-      {
-        OrderId: params.externalId,
-        QrcType: "02",
-        TemplateVersion: "01",
-        QrTtl: "15",
-        Description: params.description,
-        ...(params.buyerPhone ? { PhoneNumber: params.buyerPhone } : {}),
-      },
-    );
+    if (!/^[a-zA-Z0-9_-]{1,128}$/.test(params.externalId)) throw new Error("Invalid provider order ID");
+    return { paymentUrl: `https://payment.paidlayer.com/${params.externalId}` };
+  }
 
-    const paymentUrl = qrcResponse.Qrc?.Payload;
-    if (!paymentUrl) {
-      throw new Error("Arcopay QRC response has no Qrc.Payload");
-    }
-
-    return {
-      paymentUrl,
-    };
+  async getPaymentStatus(externalId: string): Promise<WebhookPayload> {
+    const data = await this.post<ArcopayCreateResponse>("/payments/status", { OrderId: externalId });
+    const payload = this.parseWebhookPayload(data);
+    if (payload.externalId !== externalId) throw new Error("Arco Pay status identity mismatch");
+    return payload;
   }
 
   verifyWebhookSignature(rawBody: Buffer, signature: string): boolean {
@@ -160,7 +149,13 @@ export class ArcopayPaymentProvider implements PaymentProvider {
   parseWebhookPayload(body: unknown): WebhookPayload {
     const payload = body as ArcopayCallbackPayload;
     const order = payload.Order;
-    if (!order?.OrderId || !order.MerchantOrderId || !order.Status) {
+    if (!payload.Response?.Success || !order || typeof order.OrderId !== "string" || !/^[a-zA-Z0-9_-]{1,128}$/.test(order.OrderId) ||
+      typeof order.MerchantOrderId !== "string" || !order.MerchantOrderId || order.MerchantOrderId.length > 50 ||
+      String(order.ShopId) !== this.config.shopId || order.Currency !== "RUB" ||
+      !Number.isSafeInteger(order.Amount) || order.Amount <= 0 || !order.Status ||
+      (order.PaymentType && !["CARD", "IPS"].includes(order.PaymentType)) ||
+      (order.Status === "CHARGED" && order.PaymentType && order.PaymentType !== "CARD") ||
+      (order.Status === "IPS_ACCEPTED" && order.PaymentType && order.PaymentType !== "IPS")) {
       throw new Error("Invalid Arcopay callback payload");
     }
 
@@ -177,21 +172,24 @@ export class ArcopayPaymentProvider implements PaymentProvider {
       status,
       amountMinor: order.Amount,
       currency: order.Currency,
+      ...(order.Status === "CHARGED" || order.PaymentType === "CARD" ? {method: "card" as const} : order.Status === "IPS_ACCEPTED" || order.PaymentType === "IPS" ? {method: "sbp" as const} : {}),
     };
   }
 
   private async post<T extends ArcopayApiResponse>(
     endpoint: string,
     body: unknown,
+    idempotencyKey?: string,
   ): Promise<T> {
     const response = await this.fetchFn(`${this.apiUrl}${endpoint}`, {
       method: "POST",
+      redirect: "error",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
         Authorization: `Bearer ${this.config.bearerToken}`,
         "x-api-key": this.config.apiKey,
-        "x-req-id": randomUUID(),
+        "x-req-id": idempotencyKey ?? randomUUID(),
       },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(
@@ -201,11 +199,7 @@ export class ArcopayPaymentProvider implements PaymentProvider {
 
     const data = (await response.json()) as T;
     if (!response.ok || !data.Response?.Success) {
-      const message =
-        data.Response?.ErrMessage ??
-        data.Response?.Message ??
-        `Arcopay API error: ${response.status}`;
-      throw new Error(message);
+      throw new Error("Arco Pay API unavailable");
     }
 
     return data;

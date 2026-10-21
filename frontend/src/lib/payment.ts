@@ -11,7 +11,7 @@ export function paymentHref(order: {
     return null;
   try {
     const url = new URL(order.paymentUrl);
-    return url.protocol === "https:" && !url.username && !url.password
+    return url.origin === "https://payment.paidlayer.com" && !url.username && !url.password && !url.search && !url.hash && /^\/[a-zA-Z0-9_-]{1,128}$/.test(url.pathname)
       ? url.toString()
       : null;
   } catch {
@@ -36,4 +36,25 @@ export function formatPaymentRubles(amount: number): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
+}
+
+export function hostedPaymentForm(order: {id: string; status: string; paymentStatus?: string; paymentUrl?: string | null}, origin: string) {
+  const action = paymentHref(order);
+  const base = new URL(origin);
+  if (!action || !order.id || !['http:', 'https:'].includes(base.protocol) || base.username || base.password) throw new Error('Некорректная ссылка на оплату');
+  const returnUrl = new URL('/orders/' + encodeURIComponent(order.id), base.origin).toString();
+  return { action, method: 'POST', fields: { successUrl: returnUrl, failUrl: returnUrl } };
+}
+
+export function submitHostedPayment(order: Parameters<typeof hostedPaymentForm>[0]) {
+  const checkout = hostedPaymentForm(order, window.location.origin);
+  const form = document.createElement('form');
+  form.method = checkout.method;
+  form.action = checkout.action;
+  for (const [name, value] of Object.entries(checkout.fields)) {
+    const input = document.createElement('input'); input.type = 'hidden'; input.name = name; input.value = value; form.appendChild(input);
+  }
+  document.body.appendChild(form);
+  form.submit();
+  form.remove();
 }

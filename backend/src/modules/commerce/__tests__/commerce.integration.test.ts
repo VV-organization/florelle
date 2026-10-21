@@ -373,4 +373,22 @@ describeDatabase('CommerceService with real PostgreSQL', () => {
     expect(provider.createPaymentOrder).toHaveBeenCalledTimes(1);expect(provider.getPaymentUrl).not.toHaveBeenCalled();
   });
 
+  it('uses authoritative status instead of signed callback status and recovers missed callbacks', async () => {
+    const userId=await addUser(); await fillCart(userId);
+    const placed=await service.createOrder(userId,input(),randomUUID());
+    const payload=await paymentPayload(placed.order.id);
+    const getPaymentStatus=vi.fn().mockResolvedValue({...payload,status:'pending'});
+    Object.assign(provider,{getPaymentStatus});
+    expect(await callback(payload)).toMatchObject({handled:true,reason:'payment_pending'});
+    expect(await service.getOrder(userId,placed.order.id)).toMatchObject({status:'pending'});
+    const webhook=new CommerceWebhookService(db,provider);
+    getPaymentStatus.mockResolvedValue({...payload,amountMinor:payload.amountMinor!+1});
+    expect(await webhook.reconcileOrder(placed.order.id)).toMatchObject({handled:false,reason:'payment_amount_mismatch'});
+    getPaymentStatus.mockResolvedValue(payload);
+    await webhook.reconcilePending();
+    await webhook.reconcilePending();
+    expect(await service.getOrder(userId,placed.order.id)).toMatchObject({status:'paid',paymentUrl:null});
+    expect(await stock()).toBe(90);
+  });
+
 });

@@ -1,5 +1,6 @@
 export type CreatePaymentParams = {
   merchantOrderId: string;
+  idempotencyKey?: string;
   amountUsd: string;
   amountMinor?: number;
   description: string;
@@ -25,11 +26,13 @@ export type WebhookPayload = {
   merchantOrderId: string;
   externalId: string;
   status: 'paid' | 'failed' | 'pending';
+  method?: 'card' | 'sbp';
   amountMinor?: number;
   currency?: string;
 };
 
 export interface PaymentProvider {
+  getPaymentStatus?(externalId: string): Promise<WebhookPayload>;
   createPaymentOrder?(params: CreatePaymentParams): Promise<{externalId:string}>;
   createPayment(params: CreatePaymentParams): Promise<CreatePaymentResult>;
   getPaymentUrl(params: PaymentUrlParams): Promise<{ paymentUrl: string }>;

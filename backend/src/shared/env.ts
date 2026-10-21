@@ -58,6 +58,7 @@ export const envSchema = z.object({
   ARCOPAY_API_KEY: optionalSecret,
   ARCOPAY_BEARER_TOKEN: optionalSecret,
   ARCOPAY_PUBLIC_KEY: optionalSecret,
+  ARCOPAY_SHOP_ID: z.string().regex(/^\d+$/).default("1581"),
 
   VV_ADMIN_INTEGRATION_ENABLED: z
     .preprocess(emptyToUndefined, z.enum(['true', 'false']).optional())
@@ -71,6 +72,11 @@ export const envSchema = z.object({
   FLORELLE_INTEGRATION_TOKEN: optionalSecret,
   FLOWER_POINT_INTEGRATION_TOKEN: optionalSecret,
 }).superRefine((value, ctx) => {
+  if (value.PAYMENT_PROVIDER === 'arcopay') {
+    for (const field of ['ARCOPAY_API_URL','ARCOPAY_API_KEY','ARCOPAY_BEARER_TOKEN','ARCOPAY_PUBLIC_KEY','PUBLIC_FRONTEND_URL','PUBLIC_API_URL'] as const) {
+      if (!value[field]) ctx.addIssue({code:z.ZodIssueCode.custom,path:[field],message:'Required for Arco Pay'});
+    }
+  }
   if (value.PAYMENT_PROVIDER !== 'arc_pay') return;
   for (const field of ['ARC_PAY_SECRET_KEY','ARC_PAY_WEBHOOK_SECRET','PUBLIC_FRONTEND_URL','PUBLIC_API_URL'] as const) {
     if (!value[field]) ctx.addIssue({code:z.ZodIssueCode.custom,path:[field],message:'Required for Arc Pay'});

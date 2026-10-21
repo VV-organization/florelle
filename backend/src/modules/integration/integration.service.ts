@@ -109,6 +109,7 @@ export type BuildOrderEventInput = {
     status: string;
     provider: string;
     paidAt: Date | null;
+    method?: 'card' | 'sbp';
   };
 };
 
@@ -129,7 +130,7 @@ export type VvAdminOrderEvent = {
     payment: {
       status: string;
       method: {
-        type: 'sbp';
+        type: 'sbp' | 'card';
         displayName: string;
         provider: string;
       };
@@ -236,8 +237,8 @@ export class IntegrationService {
         payment: {
           status: isPaymentReached ? 'pending' : input.payment.status,
           method: {
-            type: 'sbp',
-            displayName: input.payment.provider === 'arc_pay' ? 'Arc Pay SBP' : input.payment.provider === 'arcopay' ? 'Arcopay SBP' : 'SBP',
+            type: input.payment.method ?? 'sbp',
+            displayName: input.payment.method === 'card' ? 'Банковская карта' : input.payment.provider === 'arc_pay' ? 'Arc Pay SBP' : input.payment.provider === 'arcopay' ? 'Arcopay SBP' : 'SBP',
             provider: input.payment.provider,
           },
           paidAt: isPaymentReached || !input.payment.paidAt

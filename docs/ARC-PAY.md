@@ -1,3 +1,5 @@
+> Историческая интеграция Arc Pay. Текущая конфигурация Arco Pay описана в [operations/ARCO-PAY.md](operations/ARCO-PAY.md).
+
 # Arc Pay hosted SBP checkout
 
 Florelle uses `POST /checkout/sessions` with `sbp + h2h`, `one_stage`, RUB integer kopecks, and no `fiscal_items`. The buyer completes payment on the **URL returned by Arc Pay**. The old `arcopay` adapter is the legacy PaymentAPI and remains separate for historical orders.
