@@ -37,7 +37,7 @@ export default function FlowerGallery({products,onQuick}:{products:Listing[];onQ
  },[]);
  return <section ref={section} id="selection" className="flower-gallery" aria-label={shop.t('Избранные цветы','Selected flowers')}>
   <div className="flower-gallery-stage">
-   <div className="section-heading gallery-heading"><MotionText as="h2">{shop.t('Выбирайте','Choose with')} <span className="script">{shop.t('чувствами','feeling')}</span></MotionText><Link className="text-link" href="/catalog">{shop.t('Вся коллекция','The full collection')}<ArrowUpRight size={19}/></Link></div>
+   <div className="section-heading gallery-heading"><MotionText as="h2" singleLine={false}>{shop.t('Каталог цветов: цены и остатки','Flower catalogue: prices and stock')}</MotionText><Link className="text-link" href="/catalog">{shop.t('Весь каталог','Full catalogue')}<ArrowUpRight size={19}/></Link></div>
    <div ref={viewport} className="flower-gallery-viewport"><div ref={track} className="flower-gallery-track">{products.map((p,i)=><div className={'gallery-piece gallery-piece--'+(['large','small','medium','large','small','medium','small','large'][i%8])} key={p.id}><ProductCard p={p} onQuick={onQuick} index={i}/></div>)}</div></div>
   </div>
  </section>;

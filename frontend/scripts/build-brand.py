@@ -36,7 +36,7 @@ def arc(text,top=True):
   d,_=glyph(sans,c)
   pieces.append(f'<path transform="translate({xx:.4f} {yy:.4f}) rotate({rot:.4f}) translate({-w/2:.4f} 0) scale({scale:.6f} {-scale:.6f})" d="{d}"/>')
  return ''.join(pieces)
-for lang,subtitle in [('ru','ЦВЕТОЧНОЕ АТЕЛЬЕ'),('en','FLOWER ATELIER')]:
+for lang,subtitle in [('ru','ПОСТАВКИ ЦВЕТОВ'),('en','FLOWER SUPPLY')]:
  for tone,color in [('cream',milk),('plum','#2c1928')]:
   svg=f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="{color}" color="{color}"><title>BLOOM-SEND · {subtitle}</title>'+arc('BLOOM-SEND')+arc(subtitle,False)+'<circle cx="11" cy="60" r="1.1"/><circle cx="109" cy="60" r="1.1"/>'+flower()+'</svg>'
   (out/f'florelle-seal-{lang}-{tone}.svg').write_text(svg)

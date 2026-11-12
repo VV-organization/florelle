@@ -41,7 +41,6 @@ export default function MotionReveals({children}:{children:ReactNode}){
     Array.from(el.children).forEach((edge,i)=>{const axis=i%2?'Y':'X';add(edge,[{transform:`scale${axis}(0)`},{transform:`scale${axis}(1)`}],stagger+i*260,IN_OUT,650)});
    }else if(el.dataset.motionText==='heading'){
     el.querySelectorAll<HTMLElement>('.motion-char').forEach((char,i)=>add(char,[{opacity:0,transform:'translateY(50%) rotateY(90deg)'},{opacity:1,transform:'translateY(0) rotateY(0)'}],Math.min(i*50,700)));
-    el.querySelectorAll<HTMLElement>('[data-motion-ink]').forEach(ink=>add(ink,[{clipPath:'inset(-50% 110% -60% -45%)'},{clipPath:'inset(-50% -65% -60% -45%)'}],350,IN_OUT,1400));
    }else if(el.dataset.motionText==='lines'){
     const words=Array.from(el.querySelectorAll<HTMLElement>('.motion-line-word'));const lines:number[]=[];
     words.forEach(word=>{const top=word.getBoundingClientRect().top;let line=lines.findIndex(y=>Math.abs(y-top)<3);if(line<0){line=lines.length;lines.push(top)}add(word,[{transform:'translateY(115%)'},{transform:'translateY(0)'}],line*100+100)});

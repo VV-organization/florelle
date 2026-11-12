@@ -10,7 +10,6 @@ function split(children:ReactNode,paragraph:boolean):ReactNode {
    <span className={paragraph?'motion-word-mask':'motion-word'} key={i} aria-hidden={paragraph?undefined:true}>{paragraph?<span className="motion-line-word">{word}</span>:Array.from(word).map((char,j)=><span className="motion-char" key={j}>{char}</span>)}</span>:word);
   if(!isValidElement(child))return child;
   const el=child as ReactElement<HTMLAttributes<HTMLElement>&{children?:ReactNode}>;
-  if(/\b(script|handwritten)\b/.test(el.props.className||''))return cloneElement(el,{'data-motion-ink':'','aria-hidden':paragraph?undefined:true} as HTMLAttributes<HTMLElement>);
   return typeof el.type==='string'&&el.props.children?cloneElement(el,{},split(el.props.children,paragraph)):el;
  });
 }
