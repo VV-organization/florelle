@@ -305,3 +305,19 @@ h2.single-line-heading{font-size:clamp(30px,3.5vw,60px);line-height:1.25;letter-
 .hero-topline{max-width:100%;line-height:1.6}
 .footer-top h2{font-size:clamp(30px,3.5vw,54px)}
 @media(max-width:700px){.hero-topline{max-width:90%}.hero-bottom{gap:16px;flex-wrap:wrap}.hero-bottom>span{max-width:70%;line-height:1.6}.hero-copy h1{font-size:clamp(30px,8.5vw,54px)}}
+
+.supply-geography {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  align-items: start;
+  gap: clamp(32px, 6vw, 80px);
+  border-top: 1px solid var(--line);
+}
+.supply-geography h2 { font-size: clamp(28px, 3.5vw, 52px); line-height: 1.2; }
+.supply-geography p { max-width: 64ch; font-size: 16px; line-height: 1.8; }
+.footer-company { max-width: 80ch; padding-bottom: 20px; font-size: 12px; line-height: 1.7; }
+.legal-page article { overflow-wrap: anywhere; }
+.legal-page article a { text-decoration: underline; text-underline-offset: .15em; }
+@media (max-width: 700px) {
+  .supply-geography { grid-template-columns: 1fr; gap: 20px; }
+}
