@@ -96,7 +96,7 @@ export class ArcopayPaymentProvider implements PaymentProvider {
         MerchantOrderId: params.merchantOrderId,
         Currency: "RUB",
         Type: "PayIn",
-        PaymentTypes: ["CARD"],
+        PaymentTypes: ["IPS"],
         Amount: amountKopeks,
         FiscalData: { FiscalEnabled: false },
         ...(Object.keys(buyer).length > 0 ? { Buyer: buyer } : {}),

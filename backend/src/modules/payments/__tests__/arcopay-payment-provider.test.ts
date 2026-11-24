@@ -5,7 +5,7 @@ const order = {OrderId:'provider-1',MerchantOrderId:'merchant-1',Amount:5034,Cur
 const response = (patch={}) => ({Response:{Success:true},Order:{...order,...patch}});
 const config = {apiUrl:'https://api.clickit.team/api/v1',apiKey:'test-key',bearerToken:'test-token',publicKey:'unused',shopId:'1581',convertUsdToRub:async()=> '50.34'};
 describe('Arco Pay shared hosted checkout',()=>{
- it('creates CARD hosted checkout once using the exact amount and durable key',async()=>{
+ it('creates SBP-only hosted checkout once using the exact amount and durable key',async()=>{
   const fetchFn=vi.fn<typeof fetch>().mockResolvedValue(Response.json(response()));
   const provider=new ArcopayPaymentProvider({...config,fetchFn});
   await expect(provider.createPayment({merchantOrderId:'merchant-1',amountUsd:'1',amountMinor:5034,description:'Bloom-send order',callbackUrl:'https://shop.test/api/v1/payments/callback',successUrl:'https://shop.test/orders/1',failUrl:'https://shop.test/orders/1',idempotencyKey:'attempt-1'})).resolves.toEqual({externalId:'provider-1',paymentUrl:'https://payment.paidlayer.com/provider-1'});
@@ -13,7 +13,7 @@ describe('Arco Pay shared hosted checkout',()=>{
   const [url,init]=fetchFn.mock.calls[0]!;
   expect(url).toBe(config.apiUrl+'/payments/create');
   expect(init).toMatchObject({redirect:'error',headers:{'x-req-id':'attempt-1','x-api-key':'test-key',Authorization:'Bearer test-token'}});
-  expect(JSON.parse(String(init?.body))).toMatchObject({Amount:5034,PaymentTypes:['CARD'],IsForm:true,LifeTime:900,RedirectUrl:{SuccessUrl:'https://shop.test/orders/1',FailUrl:'https://shop.test/orders/1'}});
+  expect(JSON.parse(String(init?.body))).toMatchObject({Amount:5034,PaymentTypes:['IPS'],IsForm:true,LifeTime:900,RedirectUrl:{SuccessUrl:'https://shop.test/orders/1',FailUrl:'https://shop.test/orders/1'}});
  });
  it('gets a hosted URL without making another provider request',async()=>{
   const fetchFn=vi.fn(); const provider=new ArcopayPaymentProvider({...config,fetchFn});
