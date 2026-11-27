@@ -9,7 +9,7 @@ export default function LegalPreview({kind, children}: {kind: 'privacy' | 'terms
     <main className="page-shell legal-page">
       <h1>{kind === 'privacy'
         ? s.t('Политика конфиденциальности','Privacy Policy')
-        : s.t('ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ','User Agreement')}</h1>
+        : s.t('ПУБЛИЧНАЯ ОФЕРТА','Public Offer')}</h1>
       <article lang="ru">{children}</article>
     </main>
   );
